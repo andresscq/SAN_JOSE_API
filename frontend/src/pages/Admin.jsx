@@ -1,80 +1,69 @@
-import { useEffect, useState } from "react";
-import api from "../api/axios";
+import { useState } from "react";
+import { Navbar } from "../components/Navbar";
+import { SeccionPostulantes } from "../components/SeccionPostulantes";
 
 export const Admin = () => {
-  const [productos, setProductos] = useState([]);
-
-  // 1. Cargar productos apenas entres a la página
-  const cargarProductos = async () => {
-    try {
-      const res = await api.get("/api/productos");
-      setProductos(res.data);
-    } catch (err) {
-      console.error("Error cargando productos", err);
-    }
-  };
-
-  useEffect(() => {
-    cargarProductos();
-  }, []);
-
-  // 2. Función para mandar el nuevo precio al Backend
-  const handleUpdate = async (id, nuevoPrecio) => {
-    try {
-      await api.put(`/api/productos/${id}`, { precio_unidad: nuevoPrecio });
-      alert("¡Precio actualizado en San José!");
-      cargarProductos(); // Refrescar la lista
-    } catch (err) {
-      alert("Hubo un error al guardar");
-    }
-  };
+  // Estado para controlar qué vemos (Productos o Candidatos)
+  const [pestana, setPestana] = useState("productos");
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-blue-900">
-        Panel Administrativo
-      </h1>
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-4">Producto</th>
-              <th className="p-4">Sede</th>
-              <th className="p-4">Precio ($)</th>
-              <th className="p-4">Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productos.map((p) => (
-              <tr key={p.id} className="border-t">
-                <td className="p-4 font-semibold">{p.nombre}</td>
-                <td className="p-4 text-gray-500 text-sm">{p.nombre_sede}</td>
-                <td className="p-4">
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="border rounded px-2 py-1 w-24"
-                    defaultValue={p.precio_unidad}
-                    id={`input-${p.id}`}
-                  />
-                </td>
-                <td className="p-4">
-                  <button
-                    onClick={() =>
-                      handleUpdate(
-                        p.id,
-                        document.getElementById(`input-${p.id}`).value,
-                      )
-                    }
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm"
-                  >
-                    Guardar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="min-h-screen bg-slate-50">
+      <Navbar />
+
+      <div className="pt-28 pb-20 px-6 max-w-7xl mx-auto">
+        {/* ENCABEZADO */}
+        <div className="mb-10">
+          <h2 className="text-5xl font-black text-green-900 uppercase italic tracking-tighter">
+            Panel de <span className="text-yellow-500">Administración</span>
+          </h2>
+          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em] mt-2 ml-1">
+            Distribuidora San José • Gestión de Contenido
+          </p>
+        </div>
+
+        {/* NAVEGADOR DE SECCIONES (TABS) */}
+        <div className="flex gap-4 mb-12 bg-white p-2 rounded-[25px] shadow-sm inline-flex border border-slate-100">
+          <button
+            onClick={() => setPestana("productos")}
+            className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+              pestana === "productos"
+                ? "bg-green-900 text-white shadow-xl scale-105"
+                : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
+            }`}
+          >
+            📦 Inventario y Precios
+          </button>
+
+          <button
+            onClick={() => setPestana("postulantes")}
+            className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+              pestana === "postulantes"
+                ? "bg-green-900 text-white shadow-xl scale-105"
+                : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
+            }`}
+          >
+            👥 Candidatos (RRHH)
+          </button>
+        </div>
+
+        {/* ÁREA DE CONTENIDO */}
+        <div className="transition-all duration-500">
+          {pestana === "productos" ? (
+            <div className="bg-white p-10 rounded-[45px] shadow-sm border border-slate-100 animate-fadeIn text-center">
+              <h3 className="text-2xl font-black text-green-900 uppercase italic mb-4">
+                Control de <span className="text-yellow-500">Precios</span>
+              </h3>
+              <div className="border-2 border-dashed border-slate-100 rounded-3xl p-20">
+                <p className="text-slate-300 font-bold uppercase text-xs tracking-widest">
+                  Sección de inventario conectada a PostgreSQL
+                </p>
+              </div>
+            </div>
+          ) : (
+            /* Cargamos el componente que ya corregimos antes */
+            <SeccionPostulantes />
+          )}
+        </div>
       </div>
     </div>
   );

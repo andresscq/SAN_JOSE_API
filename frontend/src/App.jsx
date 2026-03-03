@@ -3,49 +3,31 @@ import { useEffect } from "react";
 import { Home } from "./pages/Home";
 import { Admin } from "./pages/Admin";
 import { Catalogo } from "./pages/Catalogo";
+import { Trabajo } from "./pages/Trabajo";
 
-// --- COMPONENTE INTERNO PARA EL SCROLL ---
-// Este pequeño bloque se encarga de que las anclas (#nosotros, #locales)
-// funcionen aunque cambies de página.
-const ScrollToAnchor = () => {
-  const { pathname, hash } = useLocation();
-
+// Componente para resetear el scroll al cambiar de página
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
   useEffect(() => {
-    // Si no hay hash de sección (ej: #nosotros), sube al inicio
-    if (!hash) {
-      window.scrollTo(0, 0);
-    } else {
-      // Esperamos un momento a que React monte los componentes
-      setTimeout(() => {
-        const id = hash.replace("#", "");
-        const element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 200);
-    }
-  }, [pathname, hash]); // Solo reacciona cuando cambia la ruta o el ancla
-
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return null;
 };
 
 function App() {
   return (
     <>
-      {/* Activamos el controlador de scroll */}
-      <ScrollToAnchor />
-
+      <ScrollToTop />
       <Routes>
-        {/* Ruta Principal */}
+        {/* Rutas Principales */}
         <Route path="/" element={<Home />} />
-
-        {/* Nueva Ruta para el Catálogo Completo (con filtros) */}
         <Route path="/productos" element={<Catalogo />} />
+        <Route path="/unetes" element={<Trabajo />} />
 
-        {/* Ruta Administrativa */}
+        {/* Ruta del Panel de Control */}
+        {/* Cambia la ruta del admin por esta: */}
         <Route path="/admin-sj-2026" element={<Admin />} />
-
-        {/* Redirección automática si la ruta no existe */}
+        {/* Comodín: Si la ruta no existe, al inicio */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
