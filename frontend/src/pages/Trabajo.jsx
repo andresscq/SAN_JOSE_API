@@ -9,7 +9,7 @@ export const Trabajo = () => {
   const [estaLogueado, setEstaLogueado] = useState(false);
   const [cargandoAuth, setCargandoAuth] = useState(true);
 
-  // --- TUS ESTADOS ORIGINALES ---
+  // --- ESTADOS DE FORMULARIO ---
   const [enviado, setEnviado] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [formData, setFormData] = useState({
@@ -21,29 +21,35 @@ export const Trabajo = () => {
     archivoPdf: null,
   });
 
-  // Función para sincronizar el nombre del storage al estado
+  // --- LÓGICA DE SEGURIDAD Y SINCRONIZACIÓN ---
   const sincronizarUsuario = () => {
     const usuario = localStorage.getItem("usuario_distribuidora");
     if (usuario) {
       const datosUser = JSON.parse(usuario);
-      setEstaLogueado(true);
-      setFormData((prev) => ({ ...prev, nombre: datosUser.nombre }));
+
+      // BLOQUEO: Si el rol es proveedor, no puede estar aquí
+      if (datosUser.rol === "proveedor") {
+        localStorage.removeItem("usuario_distribuidora");
+        setEstaLogueado(false);
+        setFormData((prev) => ({ ...prev, nombre: "" }));
+      } else {
+        // Si es postulante, permitimos el acceso
+        setEstaLogueado(true);
+        setFormData((prev) => ({ ...prev, nombre: datosUser.nombre }));
+      }
     }
   };
 
-  // Efecto para verificar sesión al cargar
   useEffect(() => {
     sincronizarUsuario();
     setCargandoAuth(false);
   }, []);
 
-  // Esta función se ejecuta cuando AuthPostulante tiene éxito
   const handleEntradaExitosa = () => {
     sincronizarUsuario();
-    setEstaLogueado(true);
   };
 
-  // --- TUS FUNCIONES ORIGINALES ---
+  // --- MANEJADORES DE INPUT ---
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -73,8 +79,12 @@ export const Trabajo = () => {
       alert("El teléfono debe tener 10 dígitos (09...)");
       return;
     }
-    setCargando(true);
+    if (!formData.archivoPdf) {
+      alert("Por favor adjunta tu CV en PDF");
+      return;
+    }
 
+    setCargando(true);
     const data = new FormData();
     data.append("nombre", formData.nombre);
     data.append("telefono", formData.telefono);
@@ -89,7 +99,7 @@ export const Trabajo = () => {
       });
       setEnviado(true);
     } catch (error) {
-      alert("Error al enviar postulación");
+      alert(error.response?.data?.error || "Error al enviar postulación");
     } finally {
       setCargando(false);
     }
@@ -117,7 +127,7 @@ export const Trabajo = () => {
                   <span className="text-yellow-500">Postular</span>
                 </h2>
                 <p className="text-slate-400 font-bold mt-2 uppercase text-xs tracking-widest">
-                  Solo usuarios registrados pueden enviar su CV
+                  Solo usuarios tipo postulante pueden acceder
                 </p>
               </div>
               <AuthPostulante alEntrar={handleEntradaExitosa} />
@@ -127,7 +137,7 @@ export const Trabajo = () => {
               <div className="text-center mb-16 relative">
                 <button
                   onClick={cerrarSesion}
-                  className="absolute right-0 top-0 bg-red-50 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase border border-red-100 hover:bg-red-500 hover:text-white transition-all"
+                  className="absolute right-0 top-0 bg-red-50 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase border border-red-100 hover:bg-red-500 hover:text-white transition-all shadow-sm"
                 >
                   Cerrar Sesión
                 </button>
@@ -144,7 +154,7 @@ export const Trabajo = () => {
               </div>
 
               <div className="grid md:grid-cols-2 gap-12 bg-white p-8 md:p-14 rounded-[50px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-50">
-                {/* --- INFORMACIÓN IZQUIERDA (TODO TU CONTENIDO ORIGINAL) --- */}
+                {/* --- SECCIÓN IZQUIERDA --- */}
                 <div className="space-y-8">
                   <div className="bg-green-900 text-white p-10 rounded-[40px] relative overflow-hidden shadow-xl">
                     <h3 className="text-3xl font-black mb-6 italic text-yellow-400">
@@ -161,7 +171,7 @@ export const Trabajo = () => {
                         "Ambiente profesional",
                       ].map((item) => (
                         <div key={item} className="flex items-center gap-3">
-                          <div className="bg-yellow-400 rounded-full p-1 text-green-900 font-bold">
+                          <div className="bg-yellow-400 rounded-full p-1 text-green-900 font-bold text-[10px]">
                             ✓
                           </div>
                           <span className="text-sm font-black uppercase tracking-widest">
@@ -180,47 +190,33 @@ export const Trabajo = () => {
                       Completa todos los campos y adjunta tu Hoja de Vida en
                       PDF. <br />
                       <span className="text-red-600">
-                        Celular debe empezar con 09.
+                        El número debe empezar con 09.
                       </span>
                     </p>
                   </div>
                 </div>
 
-                {/* --- FORMULARIO DERECHA (TUS INPUTS ORIGINALES) --- */}
+                {/* --- SECCIÓN DERECHA: FORMULARIO --- */}
                 {enviado ? (
                   <div className="flex flex-col items-center justify-center text-center space-y-6 py-10">
-                    <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-5xl shadow-inner">
+                    <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-5xl shadow-inner animate-pulse">
                       ✓
                     </div>
                     <h3 className="text-3xl font-black text-green-900 italic uppercase">
-                      ¡Postulación Enviada!
+                      ¡Recibido!
                     </h3>
                     <p className="text-slate-500 font-medium px-4">
-                      Hemos recibido tu información con éxito.
+                      Tu postulación ha sido guardada con éxito.
                     </p>
                     <button
                       onClick={() => setEnviado(false)}
-                      className="text-green-700 font-black uppercase text-[10px] tracking-widest border-b-2 border-yellow-400 pb-1"
+                      className="text-green-700 font-black uppercase text-[10px] tracking-widest border-b-2 border-yellow-400 pb-1 hover:text-yellow-600 transition-all"
                     >
                       Enviar otra respuesta
                     </button>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                      <label className="text-[10px] font-black uppercase text-slate-400 ml-2 mb-2 block tracking-widest">
-                        Nombre Completo
-                      </label>
-                      <input
-                        required
-                        name="nombre"
-                        value={formData.nombre}
-                        onChange={handleChange}
-                        type="text"
-                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 focus:border-yellow-400 outline-none font-bold text-slate-700 shadow-inner"
-                      />
-                    </div>
-
                     <div>
                       <label className="text-[10px] font-black uppercase text-slate-400 ml-2 mb-2 block tracking-widest">
                         WhatsApp (Ecuador)
@@ -231,8 +227,8 @@ export const Trabajo = () => {
                         value={formData.telefono}
                         onChange={handleTelefonoChange}
                         type="text"
-                        placeholder="Ej: 0987654321"
-                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 focus:border-yellow-400 outline-none font-bold text-slate-700 shadow-inner"
+                        placeholder="0987654321"
+                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 focus:border-yellow-400 outline-none font-bold text-slate-700 shadow-inner transition-all"
                       />
                     </div>
 
@@ -272,6 +268,7 @@ export const Trabajo = () => {
                         Experiencia Laboral
                       </label>
                       <textarea
+                        required
                         name="experiencia"
                         value={formData.experiencia}
                         onChange={handleChange}
@@ -282,14 +279,14 @@ export const Trabajo = () => {
 
                     <div>
                       <label className="text-[10px] font-black uppercase text-slate-400 ml-2 mb-2 block tracking-widest">
-                        Hoja de Vida (SÓLO PDF)
+                        Hoja de Vida (PDF)
                       </label>
                       <input
                         required
                         type="file"
                         accept=".pdf"
                         onChange={handleFileChange}
-                        className="w-full text-[10px] font-bold text-slate-400 file:mr-4 file:py-4 file:px-8 file:rounded-2xl file:border-0 file:bg-green-800 file:text-white hover:file:bg-yellow-400 transition-all cursor-pointer shadow-sm"
+                        className="w-full text-[10px] font-bold text-slate-400 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:bg-green-800 file:text-white hover:file:bg-yellow-400 transition-all cursor-pointer"
                       />
                     </div>
 
@@ -298,7 +295,7 @@ export const Trabajo = () => {
                       type="submit"
                       className={`w-full ${cargando ? "bg-slate-300" : "bg-yellow-400 hover:bg-green-800 hover:text-white"} text-green-900 font-black py-5 rounded-2xl uppercase text-[11px] tracking-[0.3em] shadow-xl transition-all active:scale-95`}
                     >
-                      {cargando ? "Enviando perfil..." : "Enviar mi perfil"}
+                      {cargando ? "Enviando..." : "Enviar mi perfil"}
                     </button>
                   </form>
                 )}

@@ -16,6 +16,8 @@ dist-ssr
 node_modules/
 uploads/hojas_de_vida/*
 !uploads/hojas_de_vida/.gitkeep
+uploads/catalogos/*
+!uploads/catalogos/.gitkeep
 dist/
 build/
 # Editor directories and files
@@ -28,3 +30,5 @@ build/
 *.njsproj
 *.sln
 *.sw?
+
+

@@ -6,15 +6,11 @@ export const Navbar = () => {
 
   // Función para manejar el clic en "Inicio" o el "Logo"
   const handleInicioClick = (e) => {
-    // Si ya estamos en el Home (/)
     if (location.pathname === "/") {
       e.preventDefault();
-
       // 1. Subimos suavemente
       window.scrollTo({ top: 0, behavior: "smooth" });
-
-      // 2. Quitamos el hash de la URL sin recargar la página
-      // Esto es CLAVE para que luego puedas volver a hacer clic en #locales
+      // 2. Quitamos el hash de la URL sin recargar
       navigate("/", { replace: true });
     }
   };
@@ -84,8 +80,14 @@ export const Navbar = () => {
             </Link>
           </li>
 
-          <li className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-500 hover:text-green-900 transition-all cursor-pointer shadow-md active:scale-95">
-            Proveedores
+          {/* BOTÓN PROVEEDORES ACTUALIZADO */}
+          <li>
+            <Link
+              to="/acceso-proveedores"
+              className="bg-green-600 text-white px-5 py-2.5 rounded-lg hover:bg-yellow-500 hover:text-green-900 transition-all cursor-pointer shadow-md active:scale-95 inline-block"
+            >
+              Proveedores
+            </Link>
           </li>
         </ul>
       </div>

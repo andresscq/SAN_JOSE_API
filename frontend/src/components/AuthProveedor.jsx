@@ -26,7 +26,7 @@ const IconoOjo = ({ abierto }) => (
   </svg>
 );
 
-export const AuthPostulante = ({ alEntrar }) => {
+export const AuthProveedor = ({ alEntrar }) => {
   const [esRegistro, setEsRegistro] = useState(false);
   const [datos, setDatos] = useState({
     nombre: "",
@@ -39,6 +39,7 @@ export const AuthPostulante = ({ alEntrar }) => {
   const [verPass, setVerPass] = useState(false);
   const [verConfirm, setVerConfirm] = useState(false);
 
+  // Lógica de la barra de progreso
   const calcularProgreso = () => {
     const largo = datos.password.length;
     if (largo === 0) return 0;
@@ -52,26 +53,20 @@ export const AuthPostulante = ({ alEntrar }) => {
     e.preventDefault();
     setError("");
 
-    // 1. Limpieza de datos (Quitar espacios accidentales)
-    const emailLimpio = datos.email.trim();
-
-    // 2. REGEX ESTRICTO: usuario @ dominio . extension (min 2 letras)
-    // No permite: usuario@dominio ni usuario.com (sin @)
+    const emailLimpio = datos.email.trim().toLowerCase();
     const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!regexEmail.test(emailLimpio)) {
-      return setError("El correo debe ser válido (ejemplo@dominio.com)");
+      return setError("Correo corporativo inválido (ej: ventas@empresa.com)");
     }
 
-    // 3. Validaciones adicionales de Registro
     if (esRegistro) {
-      if (!datos.nombre.trim()) return setError("El nombre es obligatorio");
-      if (datos.password.length < 9)
-        return setError("Mínimo 9 caracteres en contraseña");
-      if (datos.password !== datos.confirmarPassword)
+      if (!datos.nombre.trim())
+        return setError("El nombre de la empresa es obligatorio");
+      if (datos.password.length < 9) return setError("Mínimo 9 caracteres");
+      if (datos.password !== datos.confirmarPassword) {
         return setError("Las contraseñas no coinciden");
-    } else {
-      if (!datos.password) return setError("Ingresa tu contraseña");
+      }
     }
 
     setCargando(true);
@@ -79,41 +74,37 @@ export const AuthPostulante = ({ alEntrar }) => {
       const payload = {
         email: emailLimpio,
         password: datos.password,
-        rol: "postulante",
+        rol: "proveedor",
       };
-
       if (esRegistro) payload.nombre = datos.nombre.trim();
 
-      const endpoint = esRegistro ? "/api/registro" : "/api/login";
-      const res = await api.post(endpoint, payload);
-
-      // Guardar sesión y entrar
+      const res = await api.post(
+        esRegistro ? "/api/registro" : "/api/login",
+        payload,
+      );
       localStorage.setItem("usuario_distribuidora", JSON.stringify(res.data));
       alEntrar();
     } catch (err) {
-      setError(
-        err.response?.data?.error || "Error de conexión con el servidor",
-      );
+      setError(err.response?.data?.error || "Error de acceso");
     } finally {
       setCargando(false);
     }
   };
 
   return (
-    <div className="max-w-md w-full relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-green-800 to-yellow-500 rounded-[60px] transform rotate-2 blur-sm opacity-20"></div>
+    <div className="max-w-md w-full relative mx-auto">
+      <div className="absolute inset-0 bg-gradient-to-br from-green-900 to-green-600 rounded-[60px] transform rotate-2 blur-sm opacity-10"></div>
 
-      <div className="relative bg-white p-10 md:p-12 rounded-[55px] shadow-[0_30px_80px_rgba(0,0,0,0.2)] border-t-[10px] border-yellow-400">
+      <div className="relative bg-white p-10 md:p-12 rounded-[55px] shadow-[0_30px_80px_rgba(0,0,0,0.15)] border-t-[10px] border-green-600">
         <div className="text-center mb-8">
-          <h2 className="text-5xl font-black text-green-900 uppercase italic tracking-tighter leading-none">
-            {esRegistro ? "Nuevo" : "Hoja de"}
-            <br />
-            <span className="text-yellow-500 text-6xl">Perfil</span>
+          <h2 className="text-4xl font-black text-green-900 uppercase italic tracking-tighter leading-none">
+            Portal de <br />
+            <span className="text-yellow-500 text-5xl">Proveedores</span>
           </h2>
         </div>
 
         {error && (
-          <div className="bg-red-600 text-white p-4 rounded-2xl mb-6 text-[11px] font-black uppercase text-center italic shadow-lg animate-pulse">
+          <div className="bg-red-600 text-white p-4 rounded-2xl mb-6 text-[11px] font-black uppercase text-center italic animate-bounce">
             ⚠️ {error}
           </div>
         )}
@@ -121,15 +112,15 @@ export const AuthPostulante = ({ alEntrar }) => {
         <form onSubmit={handleSubmit} className="space-y-5">
           {esRegistro && (
             <div>
-              <label className="text-[10px] font-black text-green-900 uppercase tracking-[0.2em] ml-4 mb-2 block italic">
-                Nombre Completo
+              <label className="text-[10px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic">
+                Nombre de la Empresa
               </label>
               <input
                 required
                 name="nombre"
                 type="text"
                 value={datos.nombre}
-                placeholder="Juan Pérez"
+                placeholder="Distribuidora X"
                 className="w-full bg-slate-50 border-2 border-slate-200 rounded-[25px] px-7 py-4 outline-none font-bold text-slate-800 focus:border-green-600 transition-all shadow-inner"
                 onChange={handleChange}
               />
@@ -137,15 +128,15 @@ export const AuthPostulante = ({ alEntrar }) => {
           )}
 
           <div>
-            <label className="text-[10px] font-black text-green-900 uppercase tracking-[0.2em] ml-4 mb-2 block italic">
-              Correo Electrónico
+            <label className="text-[10px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic">
+              Correo Corporativo
             </label>
             <input
               required
               name="email"
               type="email"
               value={datos.email}
-              placeholder="juan@ejemplo.com"
+              placeholder="contacto@empresa.com"
               className="w-full bg-slate-50 border-2 border-slate-200 rounded-[25px] px-7 py-4 outline-none font-bold text-slate-800 focus:border-green-600 transition-all shadow-inner"
               onChange={handleChange}
             />
@@ -153,7 +144,7 @@ export const AuthPostulante = ({ alEntrar }) => {
 
           <div className="space-y-5">
             <div className="relative">
-              <label className="text-[10px] font-black text-green-900 uppercase tracking-[0.2em] ml-4 mb-2 block italic">
+              <label className="text-[10px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic">
                 Contraseña
               </label>
               <div className="relative">
@@ -169,12 +160,13 @@ export const AuthPostulante = ({ alEntrar }) => {
                 <button
                   type="button"
                   onClick={() => setVerPass(!verPass)}
-                  className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-green-900 transition-colors"
+                  className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-green-900"
                 >
                   <IconoOjo abierto={verPass} />
                 </button>
               </div>
 
+              {/* BARRA DE PROGRESO IDÉNTICA */}
               {esRegistro && (
                 <div className="mt-4 px-2">
                   <div className="flex justify-between items-center mb-1">
@@ -199,7 +191,7 @@ export const AuthPostulante = ({ alEntrar }) => {
 
             {esRegistro && (
               <div className="relative">
-                <label className="text-[10px] font-black text-green-900 uppercase tracking-[0.2em] ml-4 mb-2 block italic text-right mr-4">
+                <label className="text-[10px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic text-right mr-4">
                   Verificar Contraseña
                 </label>
                 <div className="relative">
@@ -215,7 +207,7 @@ export const AuthPostulante = ({ alEntrar }) => {
                   <button
                     type="button"
                     onClick={() => setVerConfirm(!verConfirm)}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-green-900 transition-colors"
+                    className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-green-900"
                   >
                     <IconoOjo abierto={verConfirm} />
                   </button>
@@ -227,27 +219,28 @@ export const AuthPostulante = ({ alEntrar }) => {
           <button
             disabled={cargando}
             type="submit"
-            className="w-full bg-green-900 text-white font-black py-6 rounded-[25px] uppercase text-[12px] tracking-[0.4em] shadow-[0_15px_30px_rgba(22,101,52,0.3)] hover:bg-yellow-400 hover:text-green-950 transition-all active:scale-95 disabled:bg-slate-300 mt-6 italic"
+            className="w-full bg-green-900 text-white font-black py-6 rounded-[25px] uppercase text-[12px] tracking-[0.4em] shadow-lg hover:bg-yellow-400 hover:text-green-950 transition-all active:scale-95 disabled:bg-slate-300 mt-6 italic"
           >
             {cargando
               ? "Validando..."
               : esRegistro
-                ? "Crear Perfil"
+                ? "Registrar Empresa"
                 : "Entrar Ahora"}
           </button>
         </form>
 
         <div className="mt-10 pt-8 border-t-2 border-dashed border-slate-100 text-center">
           <button
+            type="button"
             onClick={() => {
               setEsRegistro(!esRegistro);
               setError("");
             }}
-            className="text-[11px] font-black uppercase text-green-900 hover:text-yellow-600 transition-all tracking-[0.1em] italic"
+            className="text-[11px] font-black uppercase text-green-900 hover:text-yellow-600 transition-all italic"
           >
             {esRegistro
-              ? "¿Ya eres parte? Inicia Sesión"
-              : "¿No tienes cuenta? Registrate aquí"}
+              ? "¿Ya eres proveedor? Inicia Sesión"
+              : "¿Quieres vender con nosotros? Regístrate"}
             <div className="h-1 w-12 bg-yellow-400 mx-auto mt-1 rounded-full"></div>
           </button>
         </div>

@@ -3,7 +3,8 @@ const { Pool } = require("pg");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
-const bcrypt = require("bcrypt"); // Añadido para el Login
+const bcrypt = require("bcrypt");
+const fs = require("fs"); // Añadido para verificar carpetas
 require("dotenv").config();
 
 const app = express();
@@ -24,42 +25,72 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-// --- 4. CONFIGURACIÓN DE MULTER (CARGA DE CVs) ---
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/hojas_de_vida/");
-  },
+// --- NUEVO: ASEGURAR QUE LAS CARPETAS EXISTAN ---
+const carpetas = ["uploads/hojas_de_vida", "uploads/catalogos"];
+carpetas.forEach((dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+});
+
+// --- 4. CONFIGURACIÓN DE MULTER ---
+
+// Almacenamiento para Postulantes (CVs)
+const storageCV = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/hojas_de_vida/"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
+});
+
+// Almacenamiento para Proveedores (Catálogos)
+const storageCat = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/catalogos/"),
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `CAT-${uniqueSuffix}-${file.originalname}`);
   },
 });
 
-const upload = multer({
-  storage: storage,
+const uploadCV = multer({
+  storage: storageCV,
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "application/pdf") {
-      cb(null, true);
-    } else {
-      cb(new Error("Solo se permiten archivos PDF"), false);
-    }
+    if (file.mimetype === "application/pdf") cb(null, true);
+    else cb(new Error("Solo se permiten archivos PDF"), false);
   },
 });
 
-// --- NUEVO: RUTA DE LOGIN (Para validar a Juanito Alimaña) ---
+const uploadCat = multer({
+  storage: storageCat,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "application/pdf") cb(null, true);
+    else cb(new Error("Solo se permiten archivos PDF"), false);
+  },
+});
+
+// --- RUTA DE LOGIN ---
 app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, rol } = req.body;
   try {
     const result = await pool.query("SELECT * FROM usuarios WHERE email = $1", [
       email,
     ]);
+
     if (result.rows.length === 0) {
       return res.status(401).json({ error: "Usuario no encontrado" });
     }
+
     const usuario = result.rows[0];
     const passwordValida = await bcrypt.compare(password, usuario.password);
+
     if (!passwordValida) {
       return res.status(401).json({ error: "Contraseña incorrecta" });
     }
+
+    if (rol && usuario.rol !== rol) {
+      return res.status(403).json({
+        error: `Acceso denegado. Esta cuenta es de tipo ${usuario.rol}.`,
+      });
+    }
+
     res.json({
       id: usuario.id,
       nombre: usuario.nombre,
@@ -71,10 +102,9 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// --- 5. RUTAS DE RECLUTAMIENTO (GESTIÓN DE TALENTO) ---
+// --- 5. RUTAS DE RECLUTAMIENTO ---
 
-// POST: Recibir postulación
-app.post("/api/postular", upload.single("archivoPdf"), async (req, res) => {
+app.post("/api/postular", uploadCV.single("archivoPdf"), async (req, res) => {
   const { nombre, edad, estudio, experiencia, telefono } = req.body;
   const hoja_de_vida_url = req.file ? req.file.path : null;
 
@@ -90,11 +120,10 @@ app.post("/api/postular", upload.single("archivoPdf"), async (req, res) => {
   }
 });
 
-// GET: Obtener lista de candidatos
 app.get("/api/postulantes", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM postulantes ORDER BY id DESC", // Cambié 'fecha' por 'id' para evitar error si no existe columna fecha
+      "SELECT * FROM postulantes ORDER BY id DESC",
     );
     res.json(result.rows);
   } catch (err) {
@@ -102,7 +131,6 @@ app.get("/api/postulantes", async (req, res) => {
   }
 });
 
-// PUT: Actualizar estado del candidato (Me interesa, Rechazado, etc)
 app.put("/api/postulantes/:id/estado", async (req, res) => {
   const { id } = req.params;
   const { estado } = req.body;
@@ -117,7 +145,6 @@ app.put("/api/postulantes/:id/estado", async (req, res) => {
   }
 });
 
-// DELETE: Eliminar un candidato
 app.delete("/api/postulantes/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -128,7 +155,44 @@ app.delete("/api/postulantes/:id", async (req, res) => {
   }
 });
 
-// --- 6. RUTAS DE PRODUCTOS (INVENTARIO) ---
+// --- NUEVO: RUTA PARA PERFIL DE PROVEEDOR ---
+
+app.post(
+  "/api/perfil-proveedor",
+  uploadCat.single("catalogo"),
+  async (req, res) => {
+    const { usuario_id, nombre_empresa, ruc, telefono_corporativo } = req.body;
+    const catalogo_url = req.file ? req.file.path : null;
+
+    try {
+      const query = `
+      INSERT INTO proveedores (usuario_id, nombre_empresa, ruc, telefono_corporativo, catalogo_url)
+      VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT (usuario_id) 
+      DO UPDATE SET 
+        nombre_empresa = EXCLUDED.nombre_empresa,
+        ruc = EXCLUDED.ruc,
+        telefono_corporativo = EXCLUDED.telefono_corporativo,
+        catalogo_url = COALESCE(EXCLUDED.catalogo_url, proveedores.catalogo_url);
+    `;
+      await pool.query(query, [
+        usuario_id,
+        nombre_empresa,
+        ruc,
+        telefono_corporativo,
+        catalogo_url,
+      ]);
+      res.json({ message: "Perfil corporativo actualizado correctamente" });
+    } catch (err) {
+      console.error("Error al actualizar perfil proveedor:", err.message);
+      res
+        .status(500)
+        .json({ error: "Error al actualizar perfil de proveedor" });
+    }
+  },
+);
+
+// --- 6. RUTAS DE PRODUCTOS ---
 
 app.get("/api/productos", async (req, res) => {
   try {
@@ -153,21 +217,37 @@ app.put("/api/productos/:id", async (req, res) => {
   }
 });
 
-// --- RUTA DE REGISTRO CORREGIDA ---
+// --- RUTA DE REGISTRO ---
 app.post("/api/registro", async (req, res) => {
-  const { nombre, email, password } = req.body;
-
+  const { nombre, email, password, rol } = req.body;
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const rolFinal = rol || "postulante";
 
-    // EL CAMBIO ESTÁ AQUÍ: Agregamos el $4 para el rol
-    const result = await pool.query(
+    const resultUsuario = await pool.query(
       "INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4) RETURNING id, nombre, email, rol",
-      [nombre, email, hashedPassword, "postulante"], // <--- Aquí hay 4 valores
+      [nombre, email, hashedPassword, rolFinal],
     );
 
-    res.status(201).json(result.rows[0]);
+    const nuevoUsuario = resultUsuario.rows[0];
+    const nuevoId = nuevoUsuario.id;
+
+    if (rolFinal === "postulante") {
+      await pool.query(
+        "INSERT INTO postulantes (nombre, usuario_id, estado) VALUES ($1, $2, $3)",
+        [nombre, nuevoId, "Pendiente"],
+      );
+      console.log(`✅ Postulante vinculado con ID de usuario: ${nuevoId}`);
+    } else if (rolFinal === "proveedor") {
+      await pool.query(
+        "INSERT INTO proveedores (usuario_id, nombre_empresa) VALUES ($1, $2)",
+        [nuevoId, nombre],
+      );
+      console.log(`✅ Proveedor vinculado con ID de usuario: ${nuevoId}`);
+    }
+
+    res.status(201).json(nuevoUsuario);
   } catch (err) {
     console.error("Error en registro:", err.message);
     if (err.code === "23505") {

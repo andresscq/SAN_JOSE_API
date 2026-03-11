@@ -5,9 +5,10 @@ import { useEffect } from "react";
 import { Home } from "./pages/Home";
 import { Admin } from "./pages/Admin";
 import { Catalogo } from "./pages/Catalogo";
-import { Trabajo } from "./pages/Trabajo"; // Este ahora tiene el "Portero" adentro
+import { Trabajo } from "./pages/Trabajo";
+import { Proveedores } from "./pages/Proveedores"; // Nueva página para empresas
 
-// Componente para resetear el scroll al cambiar de página (Muy útil para la experiencia de usuario)
+// Componente para resetear el scroll al cambiar de página
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -19,7 +20,6 @@ const ScrollToTop = () => {
 function App() {
   return (
     <>
-      {/* Resetea la vista arriba cada vez que navegas */}
       <ScrollToTop />
 
       <Routes>
@@ -27,16 +27,18 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/productos" element={<Catalogo />} />
 
-        {/* Esta ruta "/unetes" ahora es inteligente. 
-            Si el usuario no está logueado, el componente Trabajo mostrará el Login automáticamente.
-        */}
+        {/* --- PORTAL DE POSTULANTES (TRABAJO) --- */}
         <Route path="/unetes" element={<Trabajo />} />
 
-        {/* --- RUTA DE ADMINISTRACIÓN (Protegida por URL secreta) --- */}
+        {/* --- NUEVA RUTA: PORTAL DE PROVEEDORES --- 
+            Aquí es donde mandamos al usuario cuando hace clic en el botón verde de la Navbar
+        */}
+        <Route path="/acceso-proveedores" element={<Proveedores />} />
+
+        {/* --- RUTA DE ADMINISTRACIÓN --- */}
         <Route path="/admin-sj-2026" element={<Admin />} />
 
         {/* --- COMODÍN (404) --- */}
-        {/* Si escriben cualquier cosa mal, los mandamos de vuelta a la página principal */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
