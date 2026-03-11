@@ -1,82 +1,78 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 
-export const SeccionPostulantes = () => {
-  const [postulantes, setPostulantes] = useState([]);
+export const SeccionProveedores = () => {
+  const [proveedores, setProveedores] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [cargando, setCargando] = useState(true);
-  const [idExpandido, setIdExpandido] = useState(null);
   const [filtroEstado, setFiltroEstado] = useState("Todos");
 
   useEffect(() => {
-    obtenerPostulantes();
+    obtenerProveedores();
   }, []);
 
-  // --- PETICIÓN GET CON PERMISO ---
-  const obtenerPostulantes = async () => {
+  const obtenerProveedores = async () => {
     try {
-      const res = await api.get("/api/postulantes", {
-        headers: { rol: "admin" }, // ✅ Autorización
+      const res = await api.get("/api/proveedores", {
+        headers: { rol: "admin" },
       });
-      setPostulantes(Array.isArray(res.data) ? res.data : []);
+      setProveedores(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
-      console.error("Error al obtener postulantes:", error);
+      console.error("Error:", error);
     } finally {
       setCargando(false);
     }
   };
 
-  // --- PETICIÓN PUT CON PERMISO ---
   const actualizarEstado = async (id, nuevoEstado) => {
     try {
       await api.put(
-        `/api/postulantes/${id}/estado`,
+        `/api/proveedores/${id}/estado`,
         { estado: nuevoEstado },
-        { headers: { rol: "admin" } }, // ✅ Autorización
+        { headers: { rol: "admin" } },
       );
-      obtenerPostulantes();
+      obtenerProveedores();
     } catch (error) {
       alert("Error al actualizar");
     }
   };
 
-  // --- PETICIÓN DELETE CON PERMISO ---
-  const eliminarPostulante = async (id) => {
+  const eliminarProveedor = async (id) => {
     if (window.confirm("¿Eliminar permanentemente?")) {
       try {
-        await api.delete(`/api/postulantes/${id}`, {
-          headers: { rol: "admin" }, // ✅ Autorización
+        await api.delete(`/api/proveedores/${id}`, {
+          headers: { rol: "admin" },
         });
-        obtenerPostulantes();
+        obtenerProveedores();
       } catch (error) {
         alert("Error al eliminar");
       }
     }
   };
 
-  const contactarWhatsApp = (nombre, telefono) => {
+  const contactarWhatsApp = (empresa, telefono) => {
     let numLimpio = telefono.replace(/\D/g, "");
     if (numLimpio.startsWith("0")) numLimpio = numLimpio.substring(1);
     const mensaje = encodeURIComponent(
-      `Hola ${nombre}, te saludamos de Distribuidora San José. 👋`,
+      `Hola, nos contactamos de Distribuidora San José con la empresa *${empresa}*. 👋`,
     );
     window.open(`https://wa.me/593${numLimpio}?text=${mensaje}`, "_blank");
   };
 
-  const postulantesFiltrados = postulantes.filter((p) => {
-    const coincideNombre = p.nombre
-      .toLowerCase()
-      .includes(busqueda.toLowerCase());
-    const estadoCandidato = p.estado || "Pendiente";
+  const proveedoresFiltrados = proveedores.filter((p) => {
+    const query = busqueda.toLowerCase();
+    const coincideBusqueda =
+      p.nombre_empresa.toLowerCase().includes(query) || p.ruc.includes(query);
+    const estadoProv = p.estado || "Pendiente";
     const coincideEstado =
-      filtroEstado === "Todos" || estadoCandidato === filtroEstado;
-    return coincideNombre && coincideEstado;
+      filtroEstado === "Todos" || estadoProv === filtroEstado;
+    return coincideBusqueda && coincideEstado;
   });
 
   if (cargando)
     return (
       <div className="p-20 text-center font-black animate-pulse text-green-900">
-        CARGANDO TALENTO...
+        CARGANDO ALIADOS...
       </div>
     );
 
@@ -86,7 +82,7 @@ export const SeccionPostulantes = () => {
       <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
         <div>
           <h2 className="text-5xl font-black text-green-900 italic uppercase tracking-tighter">
-            Panel <span className="text-yellow-500">Talento</span>
+            Panel <span className="text-yellow-500">Aliados</span>
           </h2>
           <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.3em]">
             Distribuidora San José
@@ -94,13 +90,13 @@ export const SeccionPostulantes = () => {
         </div>
         <input
           type="text"
-          placeholder="BUSCAR NOMBRE..."
+          placeholder="BUSCAR EMPRESA O RUC..."
           className="w-full md:w-80 p-4 rounded-2xl border-4 border-slate-100 focus:border-yellow-400 outline-none font-black uppercase text-xs shadow-xl transition-all"
           onChange={(e) => setBusqueda(e.target.value)}
         />
       </div>
 
-      {/* FILTROS */}
+      {/* FILTROS POR ESTADO */}
       <div className="flex flex-wrap gap-3 mb-10 bg-slate-100 p-2 rounded-[25px] w-fit">
         {["Todos", "Me interesa", "Pendiente", "Rechazado"].map((tab) => (
           <button
@@ -119,7 +115,7 @@ export const SeccionPostulantes = () => {
 
       {/* GRID DE CARDS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {postulantesFiltrados.map((p) => (
+        {proveedoresFiltrados.map((p) => (
           <div
             key={p.id}
             className="bg-white rounded-[45px] shadow-2xl border border-slate-100 overflow-hidden flex flex-col hover:border-green-200 transition-all duration-300"
@@ -127,12 +123,12 @@ export const SeccionPostulantes = () => {
             <div className="p-10 flex-grow">
               <div className="flex justify-between items-start mb-8">
                 <div className="flex gap-5">
-                  <div className="h-16 w-16 bg-green-900 rounded-[22px] flex items-center justify-center text-white text-3xl font-black italic shadow-lg transform -rotate-3">
-                    {p.nombre.charAt(0)}
+                  <div className="h-16 w-16 bg-green-900 rounded-[22px] flex items-center justify-center text-white text-3xl font-black italic shadow-lg transform -rotate-3 transition-transform hover:rotate-0">
+                    {p.nombre_empresa.charAt(0)}
                   </div>
                   <div>
                     <h4 className="text-xl font-black text-slate-800 uppercase tracking-tighter mb-2">
-                      {p.nombre}
+                      {p.nombre_empresa}
                     </h4>
                     <span
                       className={`inline-block px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
@@ -148,7 +144,7 @@ export const SeccionPostulantes = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() => eliminarPostulante(p.id)}
+                  onClick={() => eliminarProveedor(p.id)}
                   className="bg-red-50 text-red-300 hover:bg-red-500 hover:text-white w-12 h-12 rounded-2xl transition-all flex items-center justify-center"
                 >
                   🗑️
@@ -158,48 +154,29 @@ export const SeccionPostulantes = () => {
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="bg-slate-50 p-5 rounded-[25px]">
                   <p className="text-[8px] font-black text-slate-400 uppercase mb-1">
-                    Perfil
+                    Identificación
                   </p>
                   <p className="text-[11px] font-bold text-slate-700 uppercase">
-                    {p.edad} Años • {p.estudio}
+                    RUC: {p.ruc}
                   </p>
                 </div>
                 <div className="bg-green-50/50 p-5 rounded-[25px]">
                   <p className="text-[8px] font-black text-slate-400 uppercase mb-1">
-                    WhatsApp
+                    Contacto Directo
                   </p>
                   <p className="text-[11px] font-black text-green-700">
-                    {p.telefono}
+                    {p.telefono_corporativo}
                   </p>
                 </div>
               </div>
 
-              <div className="mb-8">
-                <div className="bg-slate-50/80 p-6 rounded-[30px] border border-slate-100 relative">
-                  <p
-                    className={`text-[13px] text-slate-600 leading-relaxed ${idExpandido === p.id ? "" : "line-clamp-2"}`}
-                  >
-                    {p.experiencia || "Sin experiencia detallada."}
-                  </p>
-                  {p.experiencia && p.experiencia.length > 90 && (
-                    <button
-                      onClick={() =>
-                        setIdExpandido(idExpandido === p.id ? null : p.id)
-                      }
-                      className="text-[10px] font-black text-green-800 underline mt-3 block"
-                    >
-                      {idExpandido === p.id ? "↑ VER MENOS" : "↓ LEER MÁS"}
-                    </button>
-                  )}
-                </div>
-              </div>
-
+              {/* ACCIONES DE ESTADO */}
               <div className="flex gap-3">
                 <button
                   onClick={() => actualizarEstado(p.id, "Me interesa")}
                   className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-green-900 text-[10px] font-black py-4 rounded-2xl uppercase transition-all shadow-lg active:scale-95"
                 >
-                  ⭐ Interesa
+                  ⭐ Me Interesa
                 </button>
                 <button
                   onClick={() => actualizarEstado(p.id, "Pendiente")}
@@ -211,34 +188,42 @@ export const SeccionPostulantes = () => {
                   onClick={() => actualizarEstado(p.id, "Rechazado")}
                   className="flex-1 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white text-[10px] font-black py-4 rounded-2xl uppercase transition-all"
                 >
-                  ❌ Rechazar
+                  ❌ Rechazado
                 </button>
               </div>
             </div>
 
             <div className="bg-slate-900 p-6 flex justify-between items-center px-10">
               <button
-                onClick={() => contactarWhatsApp(p.nombre, p.telefono)}
+                onClick={() =>
+                  contactarWhatsApp(p.nombre_empresa, p.telefono_corporativo)
+                }
                 className="bg-[#25D366] text-white text-[11px] font-black px-6 py-3 rounded-[18px] hover:scale-105 transition-all"
               >
                 📱 CONTACTAR
               </button>
-              <a
-                href={`http://localhost:3000/${p.hoja_de_vida_url?.replace(/\\/g, "/")}`}
-                target="_blank"
-                rel="noreferrer"
-                className="bg-white text-slate-900 px-6 py-3 rounded-[18px] text-[10px] font-black hover:bg-yellow-400 transition-all uppercase"
-              >
-                VER CV PDF
-              </a>
+              {p.catalogo_url ? (
+                <a
+                  href={`http://localhost:3000/${p.catalogo_url?.replace(/\\/g, "/")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-white text-slate-900 px-6 py-3 rounded-[18px] text-[10px] font-black hover:bg-yellow-400 transition-all uppercase"
+                >
+                  VER CATÁLOGO
+                </a>
+              ) : (
+                <span className="text-slate-500 text-[9px] font-black uppercase">
+                  Sin PDF
+                </span>
+              )}
             </div>
           </div>
         ))}
       </div>
 
-      {postulantesFiltrados.length === 0 && (
+      {proveedoresFiltrados.length === 0 && (
         <div className="text-center p-20 bg-slate-50 rounded-[40px] border-4 border-dashed border-slate-200 mt-10 italic font-black text-slate-400 uppercase tracking-widest">
-          No hay candidatos en la categoría: {filtroEstado}
+          No hay aliados en la categoría: {filtroEstado}
         </div>
       )}
     </div>

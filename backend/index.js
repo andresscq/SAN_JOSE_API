@@ -4,7 +4,7 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const bcrypt = require("bcrypt");
-const fs = require("fs"); // Añadido para verificar carpetas
+const fs = require("fs");
 require("dotenv").config();
 
 const app = express();
@@ -25,7 +25,19 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-// --- NUEVO: ASEGURAR QUE LAS CARPETAS EXISTAN ---
+// --- NUEVO: MIDDLEWARE DE SEGURIDAD PARA ADMIN ---
+const esAdmin = (req, res, next) => {
+  const { rol } = req.headers;
+  if (rol === "admin") {
+    next();
+  } else {
+    res.status(403).json({
+      error: "Acceso denegado. Se requieren permisos de administrador.",
+    });
+  }
+};
+
+// --- ASEGURAR QUE LAS CARPETAS EXISTAN ---
 const carpetas = ["uploads/hojas_de_vida", "uploads/catalogos"];
 carpetas.forEach((dir) => {
   if (!fs.existsSync(dir)) {
@@ -35,13 +47,11 @@ carpetas.forEach((dir) => {
 
 // --- 4. CONFIGURACIÓN DE MULTER ---
 
-// Almacenamiento para Postulantes (CVs)
 const storageCV = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/hojas_de_vida/"),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 
-// Almacenamiento para Proveedores (Catálogos)
 const storageCat = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/catalogos/"),
   filename: (req, file, cb) => {
@@ -102,7 +112,7 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// --- 5. RUTAS DE RECLUTAMIENTO ---
+// --- 5. RUTAS DE RECLUTAMIENTO (POSTULANTES) ---
 
 app.post("/api/postular", uploadCV.single("archivoPdf"), async (req, res) => {
   const { nombre, edad, estudio, experiencia, telefono } = req.body;
@@ -120,7 +130,8 @@ app.post("/api/postular", uploadCV.single("archivoPdf"), async (req, res) => {
   }
 });
 
-app.get("/api/postulantes", async (req, res) => {
+// Protegida con esAdmin
+app.get("/api/postulantes", esAdmin, async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM postulantes ORDER BY id DESC",
@@ -131,7 +142,8 @@ app.get("/api/postulantes", async (req, res) => {
   }
 });
 
-app.put("/api/postulantes/:id/estado", async (req, res) => {
+// Protegida con esAdmin
+app.put("/api/postulantes/:id/estado", esAdmin, async (req, res) => {
   const { id } = req.params;
   const { estado } = req.body;
   try {
@@ -145,7 +157,23 @@ app.put("/api/postulantes/:id/estado", async (req, res) => {
   }
 });
 
-app.delete("/api/postulantes/:id", async (req, res) => {
+// Actualizar estado del proveedor
+app.put("/api/proveedores/:id/estado", esAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+  try {
+    await pool.query("UPDATE proveedores SET estado = $1 WHERE id = $2", [
+      estado,
+      id,
+    ]);
+    res.json({ message: "Estado actualizado" });
+  } catch (err) {
+    res.status(500).json({ error: "Error al actualizar estado" });
+  }
+});
+
+// Protegida con esAdmin
+app.delete("/api/postulantes/:id", esAdmin, async (req, res) => {
   const { id } = req.params;
   try {
     await pool.query("DELETE FROM postulantes WHERE id = $1", [id]);
@@ -155,7 +183,66 @@ app.delete("/api/postulantes/:id", async (req, res) => {
   }
 });
 
-// --- NUEVO: RUTA PARA PERFIL DE PROVEEDOR ---
+// --- 6. RUTAS DE PROVEEDORES ---
+
+// Protegida con esAdmin
+app.get("/api/proveedores", esAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM proveedores ORDER BY id DESC",
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error al obtener proveedores:", err.message);
+    res.status(500).json({ error: "Error al obtener la lista de proveedores" });
+  }
+});
+
+// --- ELIMINAR PROVEEDOR (Versión Corregida) ---
+app.delete("/api/proveedores/:id", esAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // 1. Buscamos la ruta del catálogo
+    const buscar = await pool.query(
+      "SELECT catalogo_url FROM proveedores WHERE id = $1",
+      [id],
+    );
+
+    if (buscar.rows.length === 0) {
+      return res.status(404).json({ error: "Proveedor no encontrado" });
+    }
+
+    const rutaCatalogo = buscar.rows[0].catalogo_url;
+
+    // 2. Borramos el registro de la base de datos PRIMERO
+    await pool.query("DELETE FROM proveedores WHERE id = $1", [id]);
+
+    // 3. Borramos el archivo físico de forma segura
+    if (rutaCatalogo) {
+      // Normalizamos la ruta para evitar errores de barras invertidas
+      const pathLimpio = rutaCatalogo.replace(/\\/g, "/");
+      const pathCompleto = path.join(__dirname, pathLimpio);
+
+      if (fs.existsSync(pathCompleto)) {
+        try {
+          fs.unlinkSync(pathCompleto);
+          console.log("✅ Archivo borrado:", pathCompleto);
+        } catch (fileErr) {
+          console.error(
+            "⚠️ No se pudo borrar el archivo físico, pero el registro sí se eliminó:",
+            fileErr.message,
+          );
+        }
+      }
+    }
+
+    res.json({ message: "Proveedor eliminado correctamente" });
+  } catch (err) {
+    console.error("❌ Error en el servidor al eliminar:", err.message);
+    res.status(500).json({ error: "Error interno al eliminar el proveedor" });
+  }
+});
 
 app.post(
   "/api/perfil-proveedor",
@@ -192,7 +279,7 @@ app.post(
   },
 );
 
-// --- 6. RUTAS DE PRODUCTOS ---
+// --- 7. RUTAS DE PRODUCTOS ---
 
 app.get("/api/productos", async (req, res) => {
   try {
@@ -238,13 +325,11 @@ app.post("/api/registro", async (req, res) => {
         "INSERT INTO postulantes (nombre, usuario_id, estado) VALUES ($1, $2, $3)",
         [nombre, nuevoId, "Pendiente"],
       );
-      console.log(`✅ Postulante vinculado con ID de usuario: ${nuevoId}`);
     } else if (rolFinal === "proveedor") {
       await pool.query(
         "INSERT INTO proveedores (usuario_id, nombre_empresa) VALUES ($1, $2)",
         [nuevoId, nombre],
       );
-      console.log(`✅ Proveedor vinculado con ID de usuario: ${nuevoId}`);
     }
 
     res.status(201).json(nuevoUsuario);
@@ -257,7 +342,7 @@ app.post("/api/registro", async (req, res) => {
   }
 });
 
-// --- 7. ENCENDER SERVIDOR ---
+// --- 8. ENCENDER SERVIDOR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 SERVIDOR EJECUTÁNDOSE EN: http://localhost:${PORT}`);
