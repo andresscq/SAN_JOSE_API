@@ -94,17 +94,19 @@ export const Catalogo = () => {
         ) : (
           <>
             {/* Grilla de Productos */}
+            {/* Grilla de Productos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {filtrados.map((prod) => (
                 <ProductoCard
                   key={prod.id}
+                  id={prod.id} // ✅ ESTA ES LA LÍNEA QUE FALTABA
                   nombre={prod.nombre}
                   categoria={prod.nombre_categoria}
                   imagen={prod.imagen_url}
-                  descripcion={prod.descripcion} // Enviamos la descripción a la card
-                  stock={prod.stock} // Enviamos el stock a la card
-                  stock_alerta={prod.stock_alerta} // Enviamos el límite de alerta
-                  telefono="593987654321" // WhatsApp de la distribuidora
+                  descripcion={prod.descripcion}
+                  stock={prod.stock}
+                  stock_alerta={prod.stock_alerta}
+                  telefono="593987654321"
                 />
               ))}
             </div>

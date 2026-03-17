@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const fs = require("fs");
 const productosRoutes = require("./routes/productos");
 const sedesRoutes = require("./routes/sedes"); // 1. IMPORTA LAS RUTAS DE SEDES
+const empleadosRoutes = require("./routes/empleados"); // <--- AÑADE ESTO
 require("dotenv").config();
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/productos", productosRoutes);
 app.use("/api/sedes", sedesRoutes);
+app.use("/api/empleados", empleadosRoutes); // <--- AÑADE ESTO
 
 // --- 2. ACCESO PÚBLICO A ARCHIVOS ---
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
-import { MapPin, Clock, MessageCircle, Navigation, Store } from "lucide-react";
+import {
+  MapPin,
+  Clock,
+  MessageCircle,
+  Navigation,
+  Store,
+  User,
+} from "lucide-react"; // Añadí User
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 
@@ -20,10 +27,9 @@ export const TodasLasSedes = () => {
       }
     };
     cargarSedes();
-    window.scrollTo(0, 0); // Inicia la página desde arriba
+    window.scrollTo(0, 0);
   }, []);
 
-  // Lógica de Estado: Abierto / Cerrado / Por Cerrar
   const obtenerEstadoSede = (horarioStr) => {
     try {
       if (!horarioStr || !horarioStr.includes("-"))
@@ -53,13 +59,11 @@ export const TodasLasSedes = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Navbar con alta jerarquía visual */}
       <div className="relative z-[110]">
         <Navbar />
       </div>
 
-      {/* Espaciado superior (pt-40) para que la Navbar no tape el título */}
-      <main className="flex-grow pt-30 pb-24 px-6">
+      <main className="flex-grow pt-32 pb-24 px-6">
         <div className="max-w-7xl mx-auto">
           <header className="mb-16 text-center">
             <h1 className="text-4xl md:text-5xl font-black text-green-900 uppercase italic tracking-tighter leading-tight">
@@ -77,7 +81,6 @@ export const TodasLasSedes = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {sedes.map((sede) => {
-                // Limpieza de ruta de imagen
                 const rutaLimpia = sede.imagen_url
                   ? sede.imagen_url.replace(/^\//, "")
                   : "";
@@ -87,29 +90,24 @@ export const TodasLasSedes = () => {
 
                 const estado = obtenerEstadoSede(sede.horario);
 
-                // Configuración de mensaje de WhatsApp
+                // --- CAMBIO CLAVE AQUÍ ---
+                const telefonoDestino = sede.telefono_empleado || "";
                 const textoWhatsApp = encodeURIComponent(
-                  `¡Hola! 👋 Vengo de la web y me gustaría obtener más información sobre los productos en la sede: ${sede.nombre_sede}.`,
+                  `¡Hola! 👋 Vengo de la web y me gustaría obtener más información sobre la sede: ${sede.nombre_sede}.`,
                 );
-                const enlaceWhatsApp = `https://wa.me/${sede.telefono_vendedor}?text=${textoWhatsApp}`;
+                const enlaceWhatsApp = `https://wa.me/${telefonoDestino}?text=${textoWhatsApp}`;
 
                 return (
                   <div
                     key={sede.id}
                     className="bg-white rounded-[40px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
                   >
-                    {/* Imagen Compacta (Aspect Ratio 16:9) */}
                     <div className="aspect-video relative overflow-hidden">
                       <img
                         src={urlImagen}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         alt={sede.nombre_sede}
-                        onError={(e) => {
-                          e.target.src =
-                            "https://via.placeholder.com/600x400?text=Imagen+No+Disponible";
-                        }}
                       />
-                      {/* Badge Dinámico */}
                       <div
                         className={`absolute bottom-4 right-6 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm backdrop-blur-md ${estado.color}`}
                       >
@@ -144,9 +142,16 @@ export const TodasLasSedes = () => {
                             {sede.horario}
                           </span>
                         </div>
+
+                        {/* Indicador de Asesor Responsable */}
+                        <div className="flex items-center gap-4 text-slate-500 border-t border-slate-50 pt-4">
+                          <User className="text-green-700 shrink-0" size={18} />
+                          <span className="text-[9px] font-black uppercase tracking-wide text-green-800">
+                            Asesor: {sede.nombre_empleado || "Por asignar"}
+                          </span>
+                        </div>
                       </div>
 
-                      {/* Botones de Acción */}
                       <div className="mt-auto grid grid-cols-2 gap-4">
                         <a
                           href={sede.google_maps_link}
@@ -156,14 +161,21 @@ export const TodasLasSedes = () => {
                         >
                           <Navigation size={14} /> Mapa
                         </a>
-                        <a
-                          href={enlaceWhatsApp}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center justify-center gap-2 bg-green-900 text-white py-4 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-yellow-500 hover:text-green-900 transition-all shadow-lg"
-                        >
-                          <MessageCircle size={14} /> WhatsApp
-                        </a>
+
+                        {telefonoDestino ? (
+                          <a
+                            href={enlaceWhatsApp}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center justify-center gap-2 bg-green-900 text-white py-4 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-yellow-500 hover:text-green-900 transition-all shadow-lg"
+                          >
+                            <MessageCircle size={14} /> WhatsApp
+                          </a>
+                        ) : (
+                          <div className="flex items-center justify-center bg-slate-100 text-slate-400 py-4 rounded-2xl font-black text-[8px] uppercase tracking-widest border border-slate-100">
+                            No disponible
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

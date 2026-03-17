@@ -3,7 +3,8 @@ import { Navbar } from "../components/Navbar";
 import { SeccionPostulantes } from "../components/SeccionPostulantes";
 import { SeccionProveedores } from "../components/SeccionProveedores";
 import AdminProductos from "../components/AdminProductos";
-import { AdminSedes } from "../components/AdminSedes"; // ✅ Importación correcta
+import { AdminSedes } from "../components/AdminSedes";
+import { GestionEmpleados } from "../components/GestionEmpleados"; // ✅ Nueva importación
 
 export const Admin = () => {
   const [pestana, setPestana] = useState("productos");
@@ -47,6 +48,18 @@ export const Admin = () => {
             📍 Sedes / Locales
           </button>
 
+          {/* ✅ NUEVO BOTÓN PARA EMPLEADOS */}
+          <button
+            onClick={() => setPestana("empleados")}
+            className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+              pestana === "empleados"
+                ? "bg-green-900 text-white shadow-xl scale-105"
+                : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
+            }`}
+          >
+            👷 Equipo / WhatsApp
+          </button>
+
           <button
             onClick={() => setPestana("postulantes")}
             className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
@@ -79,21 +92,28 @@ export const Admin = () => {
             </div>
           )}
 
-          {/* 2. SEDES (Panel de Gestión) */}
+          {/* 2. SEDES */}
           {pestana === "sedes" && (
             <div className="animate-fadeIn">
               <AdminSedes />
             </div>
           )}
 
-          {/* 3. POSTULANTES */}
+          {/* ✅ 3. EMPLEADOS (Nueva Sección) */}
+          {pestana === "empleados" && (
+            <div className="animate-fadeIn">
+              <GestionEmpleados />
+            </div>
+          )}
+
+          {/* 4. POSTULANTES */}
           {pestana === "postulantes" && (
             <div className="animate-fadeIn">
               <SeccionPostulantes />
             </div>
           )}
 
-          {/* 4. PROVEEDORES */}
+          {/* 5. PROVEEDORES */}
           {pestana === "proveedores" && (
             <div className="animate-fadeIn">
               <SeccionProveedores />

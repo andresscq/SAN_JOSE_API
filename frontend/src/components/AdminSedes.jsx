@@ -3,6 +3,7 @@ import api from "../api/axios";
 
 export const AdminSedes = () => {
   const [sedes, setSedes] = useState([]);
+  const [empleados, setEmpleados] = useState([]); // ✅ Nuevo: Estado para los empleados
   const [modalAbierto, setModalAbierto] = useState(false);
   const [editandoId, setEditandoId] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -11,7 +12,7 @@ export const AdminSedes = () => {
     nombre_sede: "",
     ubicacion: "",
     horario: "08:00 - 19:00",
-    telefono_vendedor: "",
+    empleado_id: "", // ✅ Cambiado: telefono_vendedor por empleado_id
     google_maps_link: "",
     imagen: null,
   });
@@ -25,8 +26,20 @@ export const AdminSedes = () => {
     }
   };
 
+  // ✅ Nuevo: Cargar empleados para el selector
+  const cargarEmpleados = async () => {
+    try {
+      const res = await api.get("/api/empleados");
+      // Solo mostramos los empleados que estén marcados como activos
+      setEmpleados(res.data.filter((emp) => emp.activo));
+    } catch (err) {
+      console.error("Error al cargar empleados", err);
+    }
+  };
+
   useEffect(() => {
     cargarSedes();
+    cargarEmpleados();
   }, []);
 
   const handleFileChange = (e) => {
@@ -39,30 +52,20 @@ export const AdminSedes = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // 1. Creamos el contenedor para archivos
     const data = new FormData();
 
-    // 2. Agregamos los textos uno por uno (Ojo: que los nombres coincidan con el backend)
     data.append("nombre_sede", formData.nombre_sede);
     data.append("ubicacion", formData.ubicacion);
     data.append("horario", formData.horario);
-    data.append("telefono_vendedor", formData.telefono_vendedor);
+    data.append("empleado_id", formData.empleado_id); // ✅ Enviamos el ID del empleado
     data.append("google_maps_link", formData.google_maps_link);
 
-    // 3. Agregamos el archivo (Debe llamarse "imagen" como en el backend)
     if (formData.imagen) {
       data.append("imagen", formData.imagen);
-      console.log("Archivo listo para enviar:", formData.imagen.name);
-    } else {
-      console.warn("No se ha seleccionado ninguna imagen");
     }
 
     try {
-      // 4. Enviamos con el header correcto
-      const config = {
-        headers: { "Content-Type": "multipart/form-data" },
-      };
+      const config = { headers: { "Content-Type": "multipart/form-data" } };
 
       if (editandoId) {
         await api.put(`/api/sedes/${editandoId}`, data, config);
@@ -86,7 +89,7 @@ export const AdminSedes = () => {
       nombre_sede: "",
       ubicacion: "",
       horario: "08:00 - 19:00",
-      telefono_vendedor: "",
+      empleado_id: "", // ✅ Resetear correctamente
       google_maps_link: "",
       imagen: null,
     });
@@ -94,7 +97,12 @@ export const AdminSedes = () => {
 
   const prepararEdicion = (sede) => {
     setEditandoId(sede.id);
-    setFormData({ ...sede, imagen: null });
+    // ✅ Mapeamos empleado_id para que el selector lo reconozca al editar
+    setFormData({
+      ...sede,
+      empleado_id: sede.empleado_id || "",
+      imagen: null,
+    });
     setPreviewImage(
       sede.imagen_url ? `http://localhost:3000${sede.imagen_url}` : null,
     );
@@ -113,32 +121,33 @@ export const AdminSedes = () => {
   };
 
   return (
-    <div className="p-8 bg-white rounded-[40px] shadow-sm border border-slate-100 animate-fadeIn">
+    <div className="p-8 bg-white rounded-[40px] shadow-sm border border-slate-100">
       <div className="flex justify-between items-center mb-10">
         <div>
           <h2 className="text-3xl font-black text-green-900 uppercase italic">
             Gestión de Sedes
           </h2>
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
-            Panel de control de locales corporativos
+            Panel corporativo
           </p>
         </div>
         <button
           onClick={() => setModalAbierto(true)}
-          className="bg-green-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase hover:bg-yellow-500 hover:text-green-900 transition-all shadow-lg shadow-green-100"
+          className="bg-green-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase hover:bg-yellow-500 hover:text-green-900 transition-all shadow-lg"
         >
           + Nueva Sede
         </button>
       </div>
 
+      {/* Lista de Sedes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {sedes.map((s) => (
           <div
             key={s.id}
-            className="flex items-center justify-between p-5 bg-slate-50 rounded-[30px] border border-slate-100 group"
+            className="flex items-center justify-between p-5 bg-slate-50 rounded-[30px] border border-slate-100"
           >
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-200 border-2 border-white shadow-sm">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-200 border-2 border-white">
                 <img
                   src={
                     s.imagen_url
@@ -153,21 +162,22 @@ export const AdminSedes = () => {
                 <h4 className="font-black text-green-900 uppercase text-sm">
                   {s.nombre_sede}
                 </h4>
-                <p className="text-slate-400 text-[9px] font-bold uppercase">
-                  {s.ubicacion}
+                {/* Mostramos el empleado asignado en la lista */}
+                <p className="text-blue-600 text-[9px] font-black uppercase">
+                  👤 Asesor: {s.nombre_empleado || "No asignado"}
                 </p>
               </div>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={() => prepararEdicion(s)}
-                className="p-3 text-blue-600 font-bold text-[10px] uppercase hover:bg-blue-50 rounded-xl transition-all"
+                className="p-3 text-blue-600 font-bold text-[10px] uppercase hover:bg-blue-50 rounded-xl"
               >
                 Editar
               </button>
               <button
                 onClick={() => eliminarSede(s.id)}
-                className="p-3 text-red-600 font-bold text-[10px] uppercase hover:bg-red-50 rounded-xl transition-all"
+                className="p-3 text-red-600 font-bold text-[10px] uppercase hover:bg-red-50 rounded-xl"
               >
                 Borrar
               </button>
@@ -176,11 +186,12 @@ export const AdminSedes = () => {
         ))}
       </div>
 
+      {/* Modal */}
       {modalAbierto && (
         <div className="fixed inset-0 bg-green-950/40 backdrop-blur-md z-[100] flex items-center justify-center p-4">
           <form
             onSubmit={handleSubmit}
-            className="bg-white w-full max-w-lg p-10 rounded-[50px] shadow-2xl relative animate-scaleIn"
+            className="bg-white w-full max-w-lg p-10 rounded-[50px] shadow-2xl relative"
           >
             <h3 className="text-2xl font-black text-green-900 mb-8 uppercase italic">
               Configurar Local
@@ -196,7 +207,7 @@ export const AdminSedes = () => {
                     />
                   ) : (
                     <span className="text-[8px] font-black text-slate-400 uppercase">
-                      Subir Foto
+                      Foto
                     </span>
                   )}
                   <input
@@ -213,32 +224,36 @@ export const AdminSedes = () => {
                   type="text"
                   placeholder="Nombre Sede"
                   required
-                  className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none"
+                  className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none font-bold"
                   value={formData.nombre_sede}
                   onChange={(e) =>
                     setFormData({ ...formData, nombre_sede: e.target.value })
                   }
                 />
-                <input
-                  type="text"
-                  placeholder="WhatsApp (Ej: 593...)"
+
+                {/* ✅ SELECTOR DE EMPLEADOS (Reemplaza al input de texto) */}
+                <select
                   required
-                  className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none"
-                  value={formData.telefono_vendedor}
+                  className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none font-bold text-green-900 border-2 border-transparent focus:border-yellow-400 cursor-pointer"
+                  value={formData.empleado_id}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      telefono_vendedor: e.target.value,
-                    })
+                    setFormData({ ...formData, empleado_id: e.target.value })
                   }
-                />
+                >
+                  <option value="">Seleccionar Asesor...</option>
+                  {empleados.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.nombre}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <input
                 type="text"
                 placeholder="Dirección Exacta"
                 required
-                className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none"
+                className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none font-bold"
                 value={formData.ubicacion}
                 onChange={(e) =>
                   setFormData({ ...formData, ubicacion: e.target.value })
@@ -249,7 +264,7 @@ export const AdminSedes = () => {
                 <input
                   type="text"
                   placeholder="Horario"
-                  className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none"
+                  className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none font-bold"
                   value={formData.horario}
                   onChange={(e) =>
                     setFormData({ ...formData, horario: e.target.value })
@@ -258,7 +273,7 @@ export const AdminSedes = () => {
                 <input
                   type="text"
                   placeholder="Link Google Maps"
-                  className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none"
+                  className="w-full p-4 bg-slate-100 rounded-2xl text-xs outline-none font-bold"
                   value={formData.google_maps_link}
                   onChange={(e) =>
                     setFormData({

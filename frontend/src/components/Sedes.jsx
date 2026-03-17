@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // Importante para la navegación
+import { Link } from "react-router-dom";
 import api from "../api/axios";
 
 export const Sedes = () => {
@@ -10,7 +10,7 @@ export const Sedes = () => {
     const obtenerSedes = async () => {
       try {
         const respuesta = await api.get("/api/sedes");
-        // Limitamos a las primeras 4 sedes para el Home
+        // Traemos las sedes (puedes limitar a 4 para el Home)
         setSedes(respuesta.data.slice(0, 4));
       } catch (error) {
         console.error("Error al cargar sedes:", error);
@@ -41,7 +41,7 @@ export const Sedes = () => {
         {/* Grid de Sedes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {sedes.map((sede) => {
-            // Lógica blindada para la imagen: evita doble barra y maneja nulos
+            // 1. Limpieza de URL de imagen
             const rutaLimpia = sede.imagen_url
               ? sede.imagen_url.replace(/^\//, "")
               : "";
@@ -49,10 +49,15 @@ export const Sedes = () => {
               ? `http://localhost:3000/${rutaLimpia}`
               : "https://images.unsplash.com/photo-1534723452862-4c874018d66d?q=80&w=800&auto=format&fit=crop";
 
+            // 2. Lógica de WhatsApp usando el TELÉFONO DEL EMPLEADO
+            // El backend ahora envía 'telefono_empleado' gracias al LEFT JOIN
+            const telefonoDestino = sede.telefono_empleado || "";
+
             const mensajeWa = encodeURIComponent(
               `¡Hola! Vengo de la web. Deseo más información sobre la sede: ${sede.nombre_sede}`,
             );
-            const urlWhatsapp = `https://wa.me/${sede.telefono_vendedor}?text=${mensajeWa}`;
+
+            const urlWhatsapp = `https://wa.me/${telefonoDestino}?text=${mensajeWa}`;
 
             return (
               <div key={sede.id} className="text-center group animate-fadeIn">
@@ -78,24 +83,41 @@ export const Sedes = () => {
                         📍 Ver Mapa
                       </a>
                     )}
-                    <a
-                      href={urlWhatsapp}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-full bg-white text-green-950 font-black py-3 rounded-2xl text-[10px] uppercase tracking-widest hover:bg-yellow-400 transition-colors shadow-lg"
-                    >
-                      💬 Contactar
-                    </a>
+
+                    {/* El botón de contactar solo funciona si hay un teléfono asignado */}
+                    {telefonoDestino ? (
+                      <a
+                        href={urlWhatsapp}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full bg-white text-green-950 font-black py-3 rounded-2xl text-[10px] uppercase tracking-widest hover:bg-yellow-400 transition-colors shadow-lg"
+                      >
+                        💬 Contactar
+                      </a>
+                    ) : (
+                      <span className="text-white text-[9px] uppercase font-bold opacity-50">
+                        Sin contacto asignado
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 <h3 className="font-black text-green-900 text-lg uppercase leading-tight mb-1">
                   {sede.nombre_sede}
                 </h3>
+
                 <div className="space-y-1">
                   <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
                     {sede.ubicacion}
                   </p>
+
+                  {/* Opcional: Muestra el nombre del asesor si existe */}
+                  {sede.nombre_empleado && (
+                    <p className="text-yellow-600 text-[9px] font-bold uppercase italic">
+                      Asesor: {sede.nombre_empleado}
+                    </p>
+                  )}
+
                   <div className="flex items-center justify-center gap-2 mt-2">
                     <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></span>
                     <p className="text-green-700 text-[9px] font-black uppercase italic">
