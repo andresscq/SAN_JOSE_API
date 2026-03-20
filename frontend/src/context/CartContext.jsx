@@ -3,34 +3,53 @@ import api from "../api/axios";
 
 const CartContext = createContext();
 
+const STORAGE_KEY = "cart_sanjose_2026";
+const EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+
 export const CartProvider = ({ children }) => {
-  // Estado del carrito con persistencia en LocalStorage
   const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem("cart_sanjose_2026");
-    return saved ? JSON.parse(saved) : [];
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return [];
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.items && Array.isArray(parsed.items)) {
+        if (Date.now() - parsed.timestamp > EXPIRATION_TIME) {
+          localStorage.removeItem(STORAGE_KEY);
+          return [];
+        }
+        return parsed.items;
+      }
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
   });
 
-  // Guardar en el teléfono del cliente automáticamente
+  // Estado para animaciones de carga en los botones
+  const [loadingGlobal, setLoadingGlobal] = useState(false);
+
   useEffect(() => {
-    localStorage.setItem("cart_sanjose_2026", JSON.stringify(cart));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        items: cart,
+        timestamp: Date.now(),
+      }),
+    );
   }, [cart]);
 
-  // AGREGAR AL CARRITO (Corregido para evitar duplicados accidentales)
   const addToCart = (product) => {
     setCart((prev) => {
-      // Forzamos comparación de ID como String para seguridad
       const exists = prev.find(
         (item) => String(item.id) === String(product.id),
       );
-
       if (exists) {
         return prev.map((item) =>
           String(item.id) === String(product.id)
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: (item.quantity || 1) + 1 }
             : item,
         );
       }
-      // Si es nuevo, lo agregamos con cantidad 1
       return [...prev, { ...product, quantity: 1 }];
     });
   };
@@ -41,54 +60,58 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => setCart([]);
 
-  // LÓGICA DE ENVÍO Y REPARTO (ROUND ROBIN)
-  const sendToWhatsApp = async () => {
-    if (cart.length === 0) return;
+  /**
+   * ENVÍO A WHATSAPP CON SOPORTE PARA CLIC DIRECTO
+   * @param {Object} productoDirecto - Opcional: El producto desde el que se hizo clic
+   */
+  const sendToWhatsApp = async (productoDirecto = null) => {
+    // Si viene un producto directo, mandamos ese. Si no, mandamos el carrito.
+    const itemsAEnviar = productoDirecto ? [productoDirecto] : cart;
+
+    if (itemsAEnviar.length === 0) return;
+
+    setLoadingGlobal(true);
 
     try {
-      // 1. Obtener empleados activos
-      const res = await api.get("/api/empleados");
-      const activos = res.data.filter((emp) => emp.activo);
+      // 1. Pedir asesor al Backend (POST /asignar)
+      const res = await api.post("/api/vendedores/asignar", {
+        items: itemsAEnviar,
+      });
+      const vendedor = res.data;
 
-      if (activos.length === 0) {
-        alert(
-          "Lo sentimos, no hay asesores disponibles en este momento. Por favor, intenta más tarde.",
-        );
-        return;
+      if (!vendedor || !vendedor.telefono) {
+        throw new Error("No hay asesores disponibles.");
       }
 
-      // 2. Selección de vendedor (Round Robin)
-      let index = parseInt(localStorage.getItem("last_vendedor_idx")) || 0;
-      // Si el index guardado es mayor que la cantidad actual de empleados, lo reseteamos
-      if (index >= activos.length) index = 0;
+      // 2. Limpiar el teléfono de caracteres extraños
+      const telLimpio = vendedor.telefono.toString().replace(/\D/g, "");
 
-      const vendedor = activos[index];
+      // 3. Construir mensaje
+      let mensaje = `Hola ${vendedor.nombre}! \n`;
+      mensaje += `Vengo desde la web de Distribuidora San José y quiero cotizar lo siguiente:
+\n\n`;
 
-      // Actualizamos para el siguiente cliente
-      const nextIndex = (index + 1) % activos.length;
-      localStorage.setItem("last_vendedor_idx", nextIndex);
-
-      // 3. Armar el mensaje profesional
-      let mensaje = `¡Hola *${vendedor.nombre}*! 👋\n`;
-      mensaje += `Vengo de la web y deseo consultar disponibilidad de estos productos:\n\n`;
-
-      cart.forEach((item, i) => {
+      itemsAEnviar.forEach((item, i) => {
         mensaje += `*${i + 1}.* ${item.nombre}\n`;
-        mensaje += `   📦 Cantidad: ${item.quantity}\n`;
-        mensaje += `   🏷️ Cat: ${item.categoria || "General"}\n\n`;
+        mensaje += `    Cantidad: ${item.quantity || 1}\n`;
+        mensaje += `    Categoria: ${item.categoria || "General"}\n\n`;
       });
 
-      mensaje += `_Quedo atento a su respuesta, muchas gracias._`;
+      mensaje += `_¿Podrían ayudarme con información y precios? Gracias.._`;
 
-      // 4. Abrir WhatsApp (Móvil y Web)
-      const url = `https://wa.me/${vendedor.telefono}?text=${encodeURIComponent(mensaje)}`;
+      // 4. Abrir WhatsApp
+      const url = `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensaje)}`;
       window.open(url, "_blank");
 
-      // Opcional: Limpiar carrito tras envío exitoso
-      // clearCart();
+      // 5. Limpieza tras éxito
+      clearCart();
     } catch (error) {
-      console.error("Error en el sistema de reparto:", error);
-      alert("Hubo un error al conectar con el asesor.");
+      console.error("Error en el flujo de WhatsApp:", error);
+      alert(
+        "Lo sentimos, hubo un error al conectar con el asesor. Inténtalo de nuevo.",
+      );
+    } finally {
+      setLoadingGlobal(false);
     }
   };
 
@@ -96,6 +119,7 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider
       value={{
         cart,
+        loadingGlobal,
         addToCart,
         removeFromCart,
         clearCart,
@@ -107,4 +131,10 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-export const useCart = () => useContext(CartContext);
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error("useCart debe ser usado dentro de un CartProvider");
+  }
+  return context;
+};

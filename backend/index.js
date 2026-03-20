@@ -8,6 +8,7 @@ const fs = require("fs");
 const productosRoutes = require("./routes/productos");
 const sedesRoutes = require("./routes/sedes"); // 1. IMPORTA LAS RUTAS DE SEDES
 const empleadosRoutes = require("./routes/empleados"); // <--- AÑADE ESTO
+const vendedoresRoutes = require("./routes/vendedores");
 require("dotenv").config();
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/productos", productosRoutes);
 app.use("/api/sedes", sedesRoutes);
 app.use("/api/empleados", empleadosRoutes); // <--- AÑADE ESTO
+app.use("/api/vendedores", vendedoresRoutes);
 
 // --- 2. ACCESO PÚBLICO A ARCHIVOS ---
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

@@ -4,78 +4,107 @@ import { SeccionPostulantes } from "../components/SeccionPostulantes";
 import { SeccionProveedores } from "../components/SeccionProveedores";
 import AdminProductos from "../components/AdminProductos";
 import { AdminSedes } from "../components/AdminSedes";
-import { GestionEmpleados } from "../components/GestionEmpleados"; // ✅ Nueva importación
+import { GestionEmpleados } from "../components/GestionEmpleados";
+
+// --- CORRECCIÓN CRÍTICA DE IMPORTACIÓN ---
+// Importamos como 'default' (sin llaves) para que coincida con el archivo Estadisticas.jsx
+import Estadisticas from "../components/Estadisticas";
 
 export const Admin = () => {
-  const [pestana, setPestana] = useState("productos");
+  // Estado inicial en 'estadisticas' para ver el rendimiento apenas entras
+  const [pestana, setPestana] = useState("estadisticas");
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F8FAFC]">
       <Navbar />
 
       <div className="pt-28 pb-20 px-6 max-w-7xl mx-auto">
-        {/* ENCABEZADO */}
-        <div className="mb-10 animate-fadeIn">
-          <h2 className="text-5xl font-black text-green-900 uppercase italic tracking-tighter leading-none">
-            Panel de <span className="text-yellow-500">Administración</span>
+        {/* --- ENCABEZADO PRINCIPAL --- */}
+        <div className="mb-12 animate-fadeIn">
+          <h2 className="text-6xl font-black text-green-900 uppercase italic tracking-tighter leading-none">
+            Panel{" "}
+            <span className="text-yellow-500 underline decoration-4 underline-offset-8">
+              Control
+            </span>
           </h2>
-          <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em] mt-3 ml-1">
-            Distribuidora San José • Gestión de Contenido Corporativo
+          <p className="text-slate-400 font-bold uppercase text-[11px] tracking-[0.4em] mt-5 ml-1 flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            Distribuidora San José • Sistema de Gestión 2026
           </p>
         </div>
 
-        {/* NAVEGADOR DE SECCIONES (TABS) */}
-        <div className="flex flex-wrap gap-3 mb-12 bg-white p-2 rounded-[30px] shadow-sm inline-flex border border-slate-100">
+        {/* --- NAVEGACIÓN POR PESTAÑAS (TABS) --- */}
+        <div className="flex flex-wrap gap-2 mb-12 bg-white p-3 rounded-[35px] shadow-xl shadow-green-900/5 border border-slate-100 inline-flex w-full md:w-auto">
+          {/* BOTÓN ESTADÍSTICAS */}
+          <button
+            onClick={() => setPestana("estadisticas")}
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+              pestana === "estadisticas"
+                ? "bg-yellow-400 text-green-950 shadow-lg scale-105"
+                : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
+            }`}
+          >
+            📊 Estadísticas
+          </button>
+
+          <div className="hidden md:block w-[1px] h-10 bg-slate-100 mx-2 self-center"></div>
+
+          {/* BOTÓN INVENTARIO */}
           <button
             onClick={() => setPestana("productos")}
-            className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
               pestana === "productos"
-                ? "bg-green-900 text-white shadow-xl scale-105"
+                ? "bg-green-900 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
             }`}
           >
             📦 Inventario
           </button>
 
+          {/* BOTÓN SEDES */}
           <button
             onClick={() => setPestana("sedes")}
-            className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
               pestana === "sedes"
-                ? "bg-green-900 text-white shadow-xl scale-105"
+                ? "bg-green-900 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
             }`}
           >
-            📍 Sedes / Locales
+            📍 Sedes
           </button>
 
-          {/* ✅ NUEVO BOTÓN PARA EMPLEADOS */}
+          {/* BOTÓN EQUIPO */}
           <button
             onClick={() => setPestana("empleados")}
-            className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
               pestana === "empleados"
-                ? "bg-green-900 text-white shadow-xl scale-105"
+                ? "bg-green-900 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
             }`}
           >
-            👷 Equipo / WhatsApp
+            👷 Equipo WA
           </button>
 
+          <div className="hidden md:block w-[1px] h-10 bg-slate-100 mx-2 self-center"></div>
+
+          {/* BOTÓN CANDIDATOS */}
           <button
             onClick={() => setPestana("postulantes")}
-            className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
               pestana === "postulantes"
-                ? "bg-green-900 text-white shadow-xl scale-105"
+                ? "bg-slate-800 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
             }`}
           >
-            👥 RRHH / Candidatos
+            👥 Candidatos
           </button>
 
+          {/* BOTÓN PROVEEDORES */}
           <button
             onClick={() => setPestana("proveedores")}
-            className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
               pestana === "proveedores"
-                ? "bg-green-900 text-white shadow-xl scale-105"
+                ? "bg-slate-800 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
             }`}
           >
@@ -83,37 +112,44 @@ export const Admin = () => {
           </button>
         </div>
 
-        {/* ÁREA DE CONTENIDO DINÁMICO */}
-        <div className="transition-all duration-500 min-h-[400px]">
-          {/* 1. PRODUCTOS */}
+        {/* --- ÁREA DE CARGA DINÁMICA --- */}
+        <div className="bg-white/50 rounded-[40px] min-h-[500px] transition-all duration-500">
+          {/* Visualización de Estadísticas (AQUÍ USAMOS EL NOMBRE CORRECTO) */}
+          {pestana === "estadisticas" && (
+            <div className="animate-fadeIn">
+              <Estadisticas />
+            </div>
+          )}
+
+          {/* Gestión de Productos */}
           {pestana === "productos" && (
             <div className="animate-fadeIn">
               <AdminProductos />
             </div>
           )}
 
-          {/* 2. SEDES */}
+          {/* Gestión de Sedes */}
           {pestana === "sedes" && (
             <div className="animate-fadeIn">
               <AdminSedes />
             </div>
           )}
 
-          {/* ✅ 3. EMPLEADOS (Nueva Sección) */}
+          {/* Gestión de Empleados */}
           {pestana === "empleados" && (
             <div className="animate-fadeIn">
               <GestionEmpleados />
             </div>
           )}
 
-          {/* 4. POSTULANTES */}
+          {/* Recursos Humanos */}
           {pestana === "postulantes" && (
             <div className="animate-fadeIn">
               <SeccionPostulantes />
             </div>
           )}
 
-          {/* 5. PROVEEDORES */}
+          {/* Gestión de Proveedores */}
           {pestana === "proveedores" && (
             <div className="animate-fadeIn">
               <SeccionProveedores />

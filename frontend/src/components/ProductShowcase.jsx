@@ -91,6 +91,7 @@ export const ProductShowcase = ({ productos, categorias, cargando }) => {
                       {filtrados.slice(0, 3).map((prod) => (
                         <ProductoCard
                           key={prod.id}
+                          id={prod.id} // <--- AÑADE ESTA LÍNEA ESENCIAL
                           nombre={prod.nombre}
                           categoria={prod.nombre_categoria}
                           imagen={prod.imagen_url}

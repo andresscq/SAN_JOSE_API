@@ -12,7 +12,7 @@ export const Catalogo = () => {
   useEffect(() => {
     const obtenerProductos = async () => {
       try {
-        // Esta ruta debe coincidir con tu API corregida (la que tiene el JOIN)
+        // Asegúrate de que esta ruta coincida con tu backend
         const respuesta = await api.get("/api/productos");
         setProductos(respuesta.data);
       } catch (error) {
@@ -24,13 +24,13 @@ export const Catalogo = () => {
     obtenerProductos();
   }, []);
 
-  // Extraemos las categorías de forma única basándonos en los nombres que vienen del backend
+  // 1. Categorías automáticas basadas en los productos existentes
   const categoriasDinamicas = [
     "Todas",
     ...new Set(productos.map((p) => p.nombre_categoria).filter(Boolean)),
   ];
 
-  // Filtramos por búsqueda y por categoría seleccionada
+  // 2. Filtro inteligente (Busca por nombre y filtra por categoría)
   const filtrados = productos.filter((p) => {
     const matchNombre = p.nombre
       ?.toLowerCase()
@@ -41,35 +41,35 @@ export const Catalogo = () => {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 font-sans">
       <Navbar />
 
       <main className="max-w-7xl mx-auto pt-32 pb-20 px-6">
-        {/* Cabecera del Catálogo */}
+        {/* Encabezado */}
         <header className="mb-12">
           <h1 className="text-5xl font-black text-green-900 italic uppercase tracking-tighter">
             Nuestro <span className="text-yellow-500">Inventario</span>
           </h1>
-          <p className="text-slate-400 font-bold mt-2 uppercase text-[10px] tracking-[0.3em]">
-            Productos frescos directamente a tu negocio
+          <p className="text-slate-400 font-bold mt-2 uppercase text-[10px] tracking-[0.4em]">
+            Distribuidora San José • Calidad garantizada 2026
           </p>
         </header>
 
-        {/* Barra de Búsqueda Premium */}
+        {/* Buscador Estilizado */}
         <div className="relative mb-8 group">
-          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-xl">
+          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-xl opacity-30 group-focus-within:opacity-100 transition-opacity">
             🔍
-          </span>
+          </div>
           <input
             type="text"
-            placeholder="¿Qué estás buscando hoy? (ej. Queso, Huevos, Jamón...)"
-            className="w-full p-6 pl-16 bg-white rounded-[30px] shadow-sm outline-none border-2 border-transparent focus:border-green-900/10 font-bold transition-all placeholder:text-slate-300"
+            placeholder="¿Qué producto buscas hoy? (ej: Queso, Jamón, Aceite...)"
+            className="w-full p-6 pl-16 bg-white rounded-[30px] shadow-sm outline-none border-2 border-transparent focus:border-green-900/10 font-bold transition-all text-green-950 placeholder:text-slate-300"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
         </div>
 
-        {/* Filtros de Categoría Estilo Píldora */}
+        {/* Filtros por Píldoras */}
         <div className="flex flex-wrap gap-3 mb-16 justify-center md:justify-start">
           {categoriasDinamicas.map((cat) => (
             <button
@@ -78,7 +78,7 @@ export const Catalogo = () => {
               className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 border ${
                 categoriaSel === cat
                   ? "bg-green-900 text-white border-green-900 shadow-xl scale-105"
-                  : "bg-white text-slate-400 hover:text-green-900 border-slate-100"
+                  : "bg-white text-slate-400 hover:text-green-900 border-slate-100 shadow-sm"
               }`}
             >
               {cat}
@@ -86,46 +86,45 @@ export const Catalogo = () => {
           ))}
         </div>
 
-        {/* Estado de Carga */}
+        {/* Grid de Productos o Cargando */}
         {cargando ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-900"></div>
+          <div className="flex flex-col items-center justify-center py-32 bg-white rounded-[50px] shadow-sm">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-green-900 border-b-2 mb-4"></div>
+            <p className="text-green-900 font-black text-[10px] uppercase tracking-widest animate-pulse">
+              Sincronizando Almacén...
+            </p>
           </div>
         ) : (
           <>
-            {/* Grilla de Productos */}
-            {/* Grilla de Productos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {filtrados.map((prod) => (
                 <ProductoCard
                   key={prod.id}
-                  id={prod.id} // ✅ ESTA ES LA LÍNEA QUE FALTABA
+                  id={prod.id} // ✅ VITAL: Identificador único para el carrito
                   nombre={prod.nombre}
                   categoria={prod.nombre_categoria}
-                  imagen={prod.imagen_url}
+                  imagen={prod.imagen_url} // ✅ Pasa el nombre del archivo (ej: "uploads/imagen.png")
                   descripcion={prod.descripcion}
                   stock={prod.stock}
                   stock_alerta={prod.stock_alerta}
-                  telefono="593987654321"
                 />
               ))}
             </div>
 
-            {/* Mensaje de No Resultados */}
+            {/* Mensaje cuando no hay resultados */}
             {filtrados.length === 0 && (
-              <div className="text-center py-24 bg-white rounded-[40px] border-2 border-dashed border-slate-100">
-                <p className="text-slate-400 font-black uppercase tracking-widest text-xs">
-                  Lo sentimos, no encontramos productos que coincidan con tu
-                  búsqueda
+              <div className="text-center py-24 bg-white rounded-[50px] border-2 border-dashed border-slate-100 shadow-inner">
+                <p className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-4">
+                  No encontramos coincidencias para "{busqueda}"
                 </p>
                 <button
                   onClick={() => {
                     setBusqueda("");
                     setCategoriaSel("Todas");
                   }}
-                  className="mt-4 text-green-900 font-bold underline text-xs uppercase"
+                  className="px-6 py-3 bg-green-50 text-green-900 font-black rounded-xl text-[10px] uppercase hover:bg-green-900 hover:text-white transition-all"
                 >
-                  Ver todo el catálogo
+                  Ver todo el inventario
                 </button>
               </div>
             )}
