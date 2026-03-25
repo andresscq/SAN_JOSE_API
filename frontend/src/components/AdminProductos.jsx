@@ -188,18 +188,18 @@ const AdminProductos = () => {
       {/* BARRA FLOTANTE DE ACCIONES MASIVAS */}
       {seleccionados.length > 0 && (
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-green-900 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-6 border border-white/20">
-          <span className="text-[10px] font-black uppercase tracking-widest">
+          <span className="text-[11px] font-black uppercase tracking-widest">
             {seleccionados.length} Productos marcados
           </span>
           <button
             onClick={handleEliminarMasivo}
-            className="bg-red-500 hover:bg-red-600 px-6 py-2 rounded-2xl text-[9px] font-black uppercase transition-all"
+            className="bg-red-500 hover:bg-red-600 px-6 py-2 rounded-2xl text-[11px] font-black uppercase transition-all"
           >
             Eliminar Selección 🗑️
           </button>
           <button
             onClick={() => setSeleccionados([])}
-            className="text-[9px] font-black uppercase opacity-60 hover:opacity-100"
+            className="text-[11px] font-black uppercase opacity-60 hover:opacity-100"
           >
             Cancelar
           </button>
@@ -210,12 +210,12 @@ const AdminProductos = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* SECCIÓN CATEGORÍAS (CON PRIORIDAD) */}
           <div className="lg:col-span-4 bg-white p-8 rounded-[40px] shadow-sm border border-slate-100">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6 italic">
-              Panel / Categorías ⭐
+            <h2 className="text-[12px] font-black uppercase tracking-widest text-slate-400 mb-6 italic">
+              Panel / Categorías
             </h2>
             <div className="flex gap-2 mb-6">
               <input
-                className="flex-grow p-4 bg-slate-50 rounded-2xl outline-none font-bold text-xs border-2 border-transparent focus:border-green-100"
+                className="flex-grow p-4 bg-slate-50 rounded-2xl outline-none font-bold text-xs border-2 border-transparent focus:border-green-900"
                 placeholder="Nueva categoría..."
                 value={nuevaCategoria}
                 onChange={(e) => setNuevaCategoria(e.target.value)}
@@ -242,14 +242,14 @@ const AdminProductos = () => {
                     >
                       ⭐
                     </button>
-                    <span className="text-[10px] font-black text-slate-600 uppercase">
+                    <span className="text-[12px] font-black text-slate-600 uppercase">
                       {c.nombre}
                     </span>
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditarCategoria(c.id, c.nombre)}
-                      className="text-[9px] font-black text-blue-400 hover:text-blue-600 uppercase"
+                      className="text-[10px] font-black text-blue-400 hover:text-blue-600 uppercase"
                     >
                       Editar
                     </button>
@@ -268,13 +268,13 @@ const AdminProductos = () => {
           {/* SECCIÓN FORMULARIO PRODUCTOS */}
           <div className="lg:col-span-8 bg-white p-8 rounded-[40px] shadow-sm border border-slate-100">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">
+              <h2 className="text-[12px] font-black uppercase tracking-widest text-slate-400 italic">
                 Inventario / {editandoId ? "Editar Producto" : "Nuevo Producto"}
               </h2>
               {editandoId && (
                 <button
                   onClick={resetFormulario}
-                  className="text-[10px] font-black text-red-500 uppercase hover:underline"
+                  className="text-[12px] font-black text-red-500 uppercase hover:underline"
                 >
                   Cancelar Edición
                 </button>
@@ -295,7 +295,7 @@ const AdminProductos = () => {
                 ) : (
                   <div className="text-center">
                     <span className="text-3xl block mb-2">📸</span>
-                    <p className="text-[9px] font-black text-slate-400 uppercase">
+                    <p className="text-[12px] font-black text-slate-400 uppercase">
                       Cargar Imagen
                     </p>
                   </div>
@@ -311,7 +311,7 @@ const AdminProductos = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <input
                     required
-                    className="p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"
+                    className="p-4 bg-slate-50 rounded-2xl font-bold text-s outline-none"
                     placeholder="Nombre..."
                     value={producto.nombre}
                     onChange={(e) =>
@@ -320,7 +320,7 @@ const AdminProductos = () => {
                   />
                   <select
                     required
-                    className="p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none"
+                    className="p-4 bg-slate-50 rounded-2xl font-bold text-[14px] outline-none"
                     value={producto.categoria_id}
                     onChange={(e) =>
                       setProducto({ ...producto, categoria_id: e.target.value })
@@ -335,7 +335,7 @@ const AdminProductos = () => {
                   </select>
                 </div>
                 <textarea
-                  className="w-full p-4 bg-slate-50 rounded-2xl font-bold text-xs outline-none h-20 resize-none"
+                  className="w-full p-4 bg-slate-50 rounded-2xl font-bold text-s outline-none h-20 resize-none"
                   placeholder="Descripción breve..."
                   value={producto.descripcion}
                   onChange={(e) =>
@@ -391,9 +391,19 @@ const AdminProductos = () => {
               <button
                 key={cat}
                 onClick={() => setCategoriaSel(cat)}
-                className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${categoriaSel === cat ? "bg-green-900 text-white shadow-xl scale-105" : "bg-white text-slate-400 border border-slate-200"}`}
+                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-300 border-2 ${
+                  categoriaSel === cat
+                    ? "bg-green-900 text-white border-green-900 shadow-[0_8px_20px_-6px_rgba(20,83,45,0.35)] scale-105"
+                    : "bg-slate-50 text-slate-500 border-slate-200 hover:border-green-600 hover:text-green-800 hover:bg-white"
+                }`}
               >
-                {cat}
+                <div className="flex items-center gap-2">
+                  {/* El punto amarillo solo aparece en el seleccionado */}
+                  {categoriaSel === cat && (
+                    <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-[0_0_8px_rgba(250,204,21,0.6)]"></div>
+                  )}
+                  {cat}
+                </div>
               </button>
             ))}
           </div>
@@ -435,7 +445,7 @@ const AdminProductos = () => {
                       alt={prod.nombre}
                     />
                     <div className="absolute top-4 left-4">
-                      <span className="bg-white/90 backdrop-blur-sm text-green-900 px-4 py-1.5 rounded-full text-[9px] font-black uppercase">
+                      <span className="bg-white/90 backdrop-blur-sm text-green-900 px-4 py-1.5 rounded-full text-[12px] font-black uppercase">
                         {prod.nombre_categoria}
                       </span>
                     </div>
@@ -447,10 +457,10 @@ const AdminProductos = () => {
                   </div>
 
                   <div className="p-8">
-                    <h3 className="font-black text-green-950 uppercase text-xs mb-2 line-clamp-1">
+                    <h3 className="font-black text-green-950 uppercase text-[16px] mb-2 line-clamp-1">
                       {prod.nombre}
                     </h3>
-                    <p className="text-[10px] text-slate-400 font-bold italic line-clamp-2 min-h-[30px] mb-6">
+                    <p className="text-[14px] text-slate-400 font-bold italic line-clamp-2 min-h-[30px] mb-6">
                       {prod.descripcion || "Sin descripción registrada."}
                     </p>
                     <div className="flex gap-3 pt-6 border-t border-slate-50">
@@ -459,7 +469,7 @@ const AdminProductos = () => {
                           e.stopPropagation();
                           prepararEdicion(prod);
                         }}
-                        className="flex-grow bg-yellow-400 text-green-950 py-3.5 rounded-2xl text-[9px] font-black uppercase hover:bg-green-900 hover:text-white transition-all"
+                        className="flex-grow bg-yellow-400 text-green-950 py-3.5 rounded-2xl text-[11px] font-black uppercase hover:bg-green-900 hover:text-white transition-all"
                       >
                         Editar Datos
                       </button>

@@ -26,10 +26,15 @@ const upload = multer({ storage });
 // --- RUTAS API ---
 
 // OBTENER SEDES (Con JOIN para ver qué empleado está asignado)
+// OBTENER SEDES (CORREGIDO: Ahora pedimos el estado activo del empleado)
 router.get("/", async (req, res) => {
   try {
     const query = `
-      SELECT s.*, e.nombre as nombre_empleado, e.telefono as telefono_empleado
+      SELECT 
+        s.*, 
+        CASE WHEN e.activo = true THEN e.nombre ELSE NULL END as nombre_empleado, 
+        CASE WHEN e.activo = true THEN e.telefono ELSE NULL END as telefono_empleado,
+        e.activo as empleado_activo
       FROM sedes s
       LEFT JOIN empleados e ON s.empleado_id = e.id
       ORDER BY s.id ASC

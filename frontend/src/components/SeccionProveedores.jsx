@@ -84,7 +84,7 @@ export const SeccionProveedores = () => {
           <h2 className="text-5xl font-black text-green-900 italic uppercase tracking-tighter">
             Panel <span className="text-yellow-500">Aliados</span>
           </h2>
-          <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.3em]">
+          <p className="text-slate-400 font-bold text-[15px] mt-2 uppercase tracking-[0.3em]">
             Distribuidora San José
           </p>
         </div>
@@ -102,7 +102,7 @@ export const SeccionProveedores = () => {
           <button
             key={tab}
             onClick={() => setFiltroEstado(tab)}
-            className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+            className={`px-6 py-2 rounded-full text-[12px] font-black uppercase tracking-widest transition-all ${
               filtroEstado === tab
                 ? "bg-green-900 text-white shadow-lg scale-105"
                 : "text-slate-500 hover:bg-white hover:text-green-900"
@@ -127,11 +127,11 @@ export const SeccionProveedores = () => {
                     {p.nombre_empresa.charAt(0)}
                   </div>
                   <div>
-                    <h4 className="text-xl font-black text-slate-800 uppercase tracking-tighter mb-2">
+                    <h4 className="text-[22px] font-black text-slate-800 uppercase tracking-tighter mb-2">
                       {p.nombre_empresa}
                     </h4>
                     <span
-                      className={`inline-block px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                      className={`inline-block px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
                         (p.estado || "Pendiente") === "Me interesa"
                           ? "bg-yellow-400 text-green-900"
                           : (p.estado || "Pendiente") === "Rechazado"
@@ -145,7 +145,7 @@ export const SeccionProveedores = () => {
                 </div>
                 <button
                   onClick={() => eliminarProveedor(p.id)}
-                  className="bg-red-50 text-red-300 hover:bg-red-500 hover:text-white w-12 h-12 rounded-2xl transition-all flex items-center justify-center"
+                  className="bg-red-300 text-red-300 hover:bg-red-600 hover:text-white w-12 h-12 rounded-2xl transition-all flex items-center justify-center"
                 >
                   🗑️
                 </button>
@@ -153,18 +153,18 @@ export const SeccionProveedores = () => {
 
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="bg-slate-50 p-5 rounded-[25px]">
-                  <p className="text-[8px] font-black text-slate-400 uppercase mb-1">
+                  <p className="text-[13px] font-black text-slate-400 uppercase mb-1">
                     Identificación
                   </p>
-                  <p className="text-[11px] font-bold text-slate-700 uppercase">
+                  <p className="text-[13px] font-bold text-slate-700 uppercase">
                     RUC: {p.ruc}
                   </p>
                 </div>
                 <div className="bg-green-50/50 p-5 rounded-[25px]">
-                  <p className="text-[8px] font-black text-slate-400 uppercase mb-1">
+                  <p className="text-[13px] font-black text-slate-400 uppercase mb-1">
                     Contacto Directo
                   </p>
-                  <p className="text-[11px] font-black text-green-700">
+                  <p className="text-[13px] font-black text-green-700">
                     {p.telefono_corporativo}
                   </p>
                 </div>
@@ -174,19 +174,19 @@ export const SeccionProveedores = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => actualizarEstado(p.id, "Me interesa")}
-                  className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-green-900 text-[10px] font-black py-4 rounded-2xl uppercase transition-all shadow-lg active:scale-95"
+                  className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-green-900 text-[12px] font-black py-4 rounded-2xl uppercase transition-all shadow-lg active:scale-95"
                 >
                   ⭐ Me Interesa
                 </button>
                 <button
                   onClick={() => actualizarEstado(p.id, "Pendiente")}
-                  className="flex-1 bg-slate-100 text-slate-400 hover:text-green-900 text-[10px] font-black py-4 rounded-2xl uppercase transition-all"
+                  className="flex-1 bg-slate-100 text-slate-400 hover:text-green-900 text-[12px] font-black py-4 rounded-2xl uppercase transition-all"
                 >
                   ⏳ Espera
                 </button>
                 <button
                   onClick={() => actualizarEstado(p.id, "Rechazado")}
-                  className="flex-1 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white text-[10px] font-black py-4 rounded-2xl uppercase transition-all"
+                  className="flex-1 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white text-[12px] font-black py-4 rounded-2xl uppercase transition-all"
                 >
                   ❌ Rechazado
                 </button>
@@ -198,7 +198,7 @@ export const SeccionProveedores = () => {
                 onClick={() =>
                   contactarWhatsApp(p.nombre_empresa, p.telefono_corporativo)
                 }
-                className="bg-[#25D366] text-white text-[11px] font-black px-6 py-3 rounded-[18px] hover:scale-105 transition-all"
+                className="bg-[#25D366] text-white text-[12px] font-black px-6 py-3 rounded-[18px] hover:scale-105 transition-all"
               >
                 📱 CONTACTAR
               </button>
@@ -207,12 +207,12 @@ export const SeccionProveedores = () => {
                   href={`http://localhost:3000/${p.catalogo_url?.replace(/\\/g, "/")}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="bg-white text-slate-900 px-6 py-3 rounded-[18px] text-[10px] font-black hover:bg-yellow-400 transition-all uppercase"
+                  className="bg-white text-slate-900 px-6 py-3 rounded-[18px] text-[12px] font-black hover:bg-yellow-400 transition-all uppercase"
                 >
                   VER CATÁLOGO
                 </a>
               ) : (
-                <span className="text-slate-500 text-[9px] font-black uppercase">
+                <span className="text-white text-[14px] font-black uppercase">
                   Sin PDF
                 </span>
               )}

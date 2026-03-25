@@ -69,7 +69,7 @@ export const TodasLasSedes = () => {
             <h1 className="text-4xl md:text-5xl font-black text-green-900 uppercase italic tracking-tighter leading-tight">
               Nuestra Red de <span className="text-yellow-500">Locales</span>
             </h1>
-            <p className="text-slate-400 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.4em] mt-4">
+            <p className="text-slate-400 text-[10px] md:text-[15px] font-bold uppercase tracking-[0.4em] mt-4">
               Distribuidora San José • Cobertura Nacional y Atención de Primera
             </p>
           </header>
@@ -109,7 +109,7 @@ export const TodasLasSedes = () => {
                         alt={sede.nombre_sede}
                       />
                       <div
-                        className={`absolute bottom-4 right-6 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm backdrop-blur-md ${estado.color}`}
+                        className={`absolute bottom-4 right-6 px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm backdrop-blur-md ${estado.color}`}
                       >
                         ● {estado.texto}
                       </div>
@@ -117,36 +117,36 @@ export const TodasLasSedes = () => {
 
                     <div className="p-9 flex-1 flex flex-col">
                       <div className="flex items-start justify-between mb-5">
-                        <h3 className="text-2xl font-black text-green-900 uppercase italic leading-none">
+                        <h3 className="text-2xl font-black text-green-900 uppercase italic leading-none ">
                           {sede.nombre_sede}
                         </h3>
-                        <Store size={20} className="text-slate-200" />
+                        <Store size={25} className="text-green-900" />
                       </div>
 
                       <div className="space-y-4 mb-10">
                         <div className="flex items-start gap-4 text-slate-500">
                           <MapPin
                             className="text-yellow-500 shrink-0"
-                            size={18}
+                            size={23}
                           />
-                          <span className="text-[10px] font-bold uppercase tracking-wide leading-relaxed">
+                          <span className="text-[14px] font-bold uppercase tracking-wide leading-relaxed">
                             {sede.ubicacion}
                           </span>
                         </div>
                         <div className="flex items-center gap-4 text-slate-500">
                           <Clock
                             className="text-yellow-500 shrink-0"
-                            size={18}
+                            size={23}
                           />
-                          <span className="text-[10px] font-bold uppercase tracking-wide">
+                          <span className="text-[15px] font-bold uppercase tracking-wide">
                             {sede.horario}
                           </span>
                         </div>
 
                         {/* Indicador de Asesor Responsable */}
                         <div className="flex items-center gap-4 text-slate-500 border-t border-slate-50 pt-4">
-                          <User className="text-green-700 shrink-0" size={18} />
-                          <span className="text-[9px] font-black uppercase tracking-wide text-green-800">
+                          <User className="text-green-700 shrink-0" size={23} />
+                          <span className="text-[13px] font-black uppercase tracking-wide text-green-800">
                             Asesor: {sede.nombre_empleado || "Por asignar"}
                           </span>
                         </div>
@@ -157,9 +157,9 @@ export const TodasLasSedes = () => {
                           href={sede.google_maps_link}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center justify-center gap-2 bg-slate-50 text-slate-600 py-4 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-slate-100 transition-all border border-slate-100"
+                          className="flex items-center justify-center gap-2 bg-slate-50 text-slate-600 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-all border border-slate-100"
                         >
-                          <Navigation size={14} /> Mapa
+                          <Navigation size={23} /> Mapa
                         </a>
 
                         {telefonoDestino ? (
@@ -167,12 +167,12 @@ export const TodasLasSedes = () => {
                             href={enlaceWhatsApp}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center justify-center gap-2 bg-green-900 text-white py-4 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-yellow-500 hover:text-green-900 transition-all shadow-lg"
+                            className="flex items-center justify-center gap-2 bg-green-900 text-white py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-yellow-500 hover:text-green-900 transition-all shadow-lg"
                           >
-                            <MessageCircle size={14} /> WhatsApp
+                            <MessageCircle size={21} /> WhatsApp
                           </a>
                         ) : (
-                          <div className="flex items-center justify-center bg-slate-100 text-slate-400 py-4 rounded-2xl font-black text-[8px] uppercase tracking-widest border border-slate-100">
+                          <div className="flex items-center justify-center bg-slate-100 text-slate-400 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest border border-slate-100">
                             No disponible
                           </div>
                         )}

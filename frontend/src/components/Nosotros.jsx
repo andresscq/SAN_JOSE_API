@@ -2,17 +2,17 @@
 
 export const Nosotros = () => {
   return (
-    <section
-      id="nosotros"
-      className="py-24 bg-green-800 px-6 text-white relative overflow-hidden"
-    >
+    <section className="py-24 bg-green-800 px-6 text-white relative overflow-hidden">
       {/* Decoración de fondo sutil */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-48 -mt-48 blur-3xl"></div>
 
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
         {/* Lado Izquierdo: Texto y Tarjetas */}
         <div className="space-y-6 relative z-10">
-          <h2 className="text-4xl md:text-5xl font-black leading-tight uppercase italic tracking-tighter">
+          <h2
+            id="nosotros"
+            className="text-4xl md:text-5xl font-black leading-tight uppercase italic tracking-tighter"
+          >
             Más que una distribuidora, <br />
             <span className="text-yellow-400">somos tu familia.</span>
           </h2>
@@ -27,7 +27,7 @@ export const Nosotros = () => {
               <h4 className="font-black text-yellow-400 text-lg mb-1 tracking-widest uppercase">
                 Misión
               </h4>
-              <p className="text-sm leading-relaxed">
+              <p className="text-[17px] leading-relaxed ">
                 Liderar el mercado avícola y de víveres con honestidad, calidad
                 y eficiencia total en cada entrega.
               </p>
@@ -37,7 +37,7 @@ export const Nosotros = () => {
               <h4 className="font-black text-yellow-400 text-lg mb-1 tracking-widest uppercase">
                 Visión
               </h4>
-              <p className="text-sm leading-relaxed">
+              <p className="text-[17px] leading-relaxed ">
                 Ser reconocidos a nivel nacional por nuestra calidad de
                 productos y, sobre todo, por nuestra calidez humana.
               </p>

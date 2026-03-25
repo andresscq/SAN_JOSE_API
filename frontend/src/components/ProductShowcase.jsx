@@ -29,7 +29,7 @@ export const ProductShowcase = ({ productos, categorias, cargando }) => {
             Selección <span className="text-yellow-500">Premium</span>
           </h2>
           <div className="h-1 flex-grow mx-8 bg-slate-200 hidden md:block rounded-full"></div>
-          <p className="text-slate-400 font-bold text-sm tracking-widest uppercase">
+          <p className="text-slate-400 font-bold text-sm tracking-widest uppercase text-[18px]">
             Stock Actualizado 2026
           </p>
         </div>
@@ -60,17 +60,18 @@ export const ProductShowcase = ({ productos, categorias, cargando }) => {
                       <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl"></div>
 
                       <div className="relative z-10">
-                        <span className="text-yellow-400 font-black text-sm tracking-[0.3em] uppercase">
+                        <span className="text-yellow-400 font-black text-sm tracking-[0.3em] uppercase text-[20px]">
                           Especialidad
                         </span>
                         <h3 className="text-5xl font-black uppercase italic mt-2 leading-none">
                           {cat}
                         </h3>
+                        <div className="h-[6px] w-[200px] mt-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-full shadow-[0_0_15px_rgba(250,204,21,0.3)] transition-all duration-500 group-hover/cat:w-[120px]"></div>
                       </div>
 
                       <div className="relative z-10">
                         {/* Descripción de la Categoría */}
-                        <p className="text-green-200 font-medium mb-8 text-sm opacity-80 leading-relaxed">
+                        <p className="text-green-200 font-medium mb-8 text-sm opacity-80 leading-relaxed text-[21px]">
                           {categorias.find(
                             (c) => c.nombre.toUpperCase() === cat,
                           )?.descripcion ||
@@ -79,7 +80,7 @@ export const ProductShowcase = ({ productos, categorias, cargando }) => {
 
                         <Link
                           to="/productos"
-                          className="inline-block bg-yellow-400 text-green-950 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white transition-all shadow-lg text-center"
+                          className="inline-block bg-yellow-400 text-green-950 px-8 py-4 rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-white transition-all shadow-lg text-center"
                         >
                           Explorar Todo
                         </Link>

@@ -1,1 +1,77 @@
 @import "tailwindcss";
+
+/* 🚚 Carrito en carretera: Movimiento de vibración + línea de asfalto */
+@keyframes truckDrive {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes roadMove {
+  0% {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+}
+.animate-truck-drive {
+  animation: truckDrive 0.5s infinite linear;
+}
+.road-line {
+  animation: roadMove 0.8s infinite linear;
+}
+
+/* 💰 Brillo de Moneda: Un rayo de luz que cruza el icono */
+@keyframes coinShine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+.animate-shine {
+  position: relative;
+  overflow: hidden;
+}
+.animate-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+  transform: skewX(-25deg);
+  animation: coinShine 2s infinite;
+}
+
+/* 🛡️ Radar de Seguridad: Ondas que salen del escudo */
+@keyframes radarPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+.radar-wave {
+  animation: radarPulse 2s infinite;
+}
+

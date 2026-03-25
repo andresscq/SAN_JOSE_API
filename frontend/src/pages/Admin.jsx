@@ -27,7 +27,7 @@ export const Admin = () => {
               Control
             </span>
           </h2>
-          <p className="text-slate-400 font-bold uppercase text-[11px] tracking-[0.4em] mt-5 ml-1 flex items-center gap-2">
+          <p className="text-slate-400 font-bold uppercase text-[13px] tracking-[0.4em] mt-5 ml-1 flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
             Distribuidora San José • Sistema de Gestión 2026
           </p>
@@ -38,7 +38,7 @@ export const Admin = () => {
           {/* BOTÓN ESTADÍSTICAS */}
           <button
             onClick={() => setPestana("estadisticas")}
-            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[12px] tracking-widest transition-all duration-300 ${
               pestana === "estadisticas"
                 ? "bg-yellow-400 text-green-950 shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
@@ -52,7 +52,7 @@ export const Admin = () => {
           {/* BOTÓN INVENTARIO */}
           <button
             onClick={() => setPestana("productos")}
-            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[12px] tracking-widest transition-all duration-300 ${
               pestana === "productos"
                 ? "bg-green-900 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
@@ -64,7 +64,7 @@ export const Admin = () => {
           {/* BOTÓN SEDES */}
           <button
             onClick={() => setPestana("sedes")}
-            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[12px] tracking-widest transition-all duration-300 ${
               pestana === "sedes"
                 ? "bg-green-900 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
@@ -76,7 +76,7 @@ export const Admin = () => {
           {/* BOTÓN EQUIPO */}
           <button
             onClick={() => setPestana("empleados")}
-            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[12px] tracking-widest transition-all duration-300 ${
               pestana === "empleados"
                 ? "bg-green-900 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
@@ -90,7 +90,7 @@ export const Admin = () => {
           {/* BOTÓN CANDIDATOS */}
           <button
             onClick={() => setPestana("postulantes")}
-            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[12px] tracking-widest transition-all duration-300 ${
               pestana === "postulantes"
                 ? "bg-slate-800 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"
@@ -102,7 +102,7 @@ export const Admin = () => {
           {/* BOTÓN PROVEEDORES */}
           <button
             onClick={() => setPestana("proveedores")}
-            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[10px] tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-8 py-4 rounded-[25px] font-black uppercase text-[12px] tracking-widest transition-all duration-300 ${
               pestana === "proveedores"
                 ? "bg-slate-800 text-white shadow-lg scale-105"
                 : "text-slate-400 hover:bg-slate-50 hover:text-green-900"

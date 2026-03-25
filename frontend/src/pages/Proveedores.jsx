@@ -93,14 +93,14 @@ export const Proveedores = () => {
                   <h1 className="text-5xl font-black text-green-900 uppercase italic leading-none mb-2">
                     Panel <span className="text-yellow-500">Corporativo</span>
                   </h1>
-                  <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] italic">
+                  <p className="text-slate-400 font-bold uppercase tracking-widest text-[18px] italic">
                     Sesión iniciada como: {usuario.nombre}
                   </p>
                 </div>
 
                 <button
                   onClick={cerrarSesion}
-                  className="bg-red-50 text-red-600 px-8 py-3 rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                  className="bg-red-50 text-red-600 px-8 py-3 rounded-full font-black uppercase text-[12px] tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-sm"
                 >
                   Cerrar Sesión
                 </button>
@@ -111,7 +111,7 @@ export const Proveedores = () => {
                 <div className="lg:col-span-3 space-y-8">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="h-8 w-2 bg-green-600 rounded-full"></div>
-                    <h3 className="text-xl font-black text-green-900 uppercase italic">
+                    <h3 className="text-[25px] font-black text-green-900 uppercase italic">
                       Datos de la Empresa
                     </h3>
                   </div>
@@ -142,29 +142,29 @@ export const Proveedores = () => {
                       </svg>
                     </div>
 
-                    <h4 className="text-green-900 font-black uppercase text-sm mb-4 italic tracking-tight">
+                    <h4 className="text-green-900 font-black uppercase text-sm mb-4 italic tracking-tight text-[20px]">
                       Estatus de Proveedor
                     </h4>
 
                     <div className="space-y-4 relative z-10">
                       <div className="flex items-center gap-3">
                         <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse"></div>
-                        <span className="text-[11px] font-bold text-slate-600 uppercase">
+                        <span className="text-[14px] font-bold text-slate-600 uppercase">
                           Verificado
                         </span>
                       </div>
 
-                      <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                      <p className="text-s text-slate-500 font-medium leading-relaxed">
                         Su perfil es visible para nuestro sistema de logística.
                         Asegúrese de que su <b>RUC</b> sea válido para evitar
                         retrasos en facturación.
                       </p>
 
                       <div className="pt-4 border-t border-slate-200">
-                        <p className="text-[10px] font-black text-slate-400 uppercase mb-2">
+                        <p className="text-[14px] font-black text-slate-400 uppercase mb-2">
                           Formato de Catálogo:
                         </p>
-                        <ul className="text-[10px] font-bold text-green-800 space-y-2 italic">
+                        <ul className="text-[14px] font-bold text-green-800 space-y-2 italic">
                           <li className="flex items-center gap-2">
                             <span className="h-1 w-1 bg-green-800 rounded-full"></span>{" "}
                             PDF (Máximo 10MB)
@@ -179,16 +179,16 @@ export const Proveedores = () => {
                   </div>
 
                   <div className="bg-yellow-400 p-8 rounded-[40px] shadow-[0_20px_40px_rgba(234,179,8,0.2)]">
-                    <h4 className="text-green-950 font-black uppercase text-sm mb-2 italic">
+                    <h4 className="text-green-950 font-black uppercase text-sm mb-2 italic text-[20px]">
                       Línea Mayorista
                     </h4>
-                    <p className="text-[11px] font-bold text-green-900/70 mb-4 leading-snug">
+                    <p className="text-[15px] font-bold text-green-900/70 mb-4 leading-snug">
                       Para convenios de exclusividad o entregas de gran volumen,
                       contacte directamente a gerencia.
                     </p>
                     <a
                       href="mailto:proveedores@distribuidora.com"
-                      className="inline-block text-[10px] font-black uppercase bg-green-950 text-white px-6 py-3 rounded-full hover:bg-white hover:text-green-950 transition-colors shadow-md"
+                      className="inline-block text-[12px] font-black uppercase bg-green-950 text-white px-6 py-3 rounded-full hover:bg-white hover:text-green-950 transition-colors shadow-md"
                     >
                       Enviar Correo
                     </a>

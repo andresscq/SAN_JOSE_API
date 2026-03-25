@@ -100,7 +100,7 @@ export const GestionEmpleados = () => {
           <h1 className="text-5xl font-black text-green-900 uppercase italic tracking-tighter leading-none">
             Equipo <span className="text-yellow-500">Ventas</span>
           </h1>
-          <p className="text-slate-400 font-bold text-[10px] mt-3 uppercase tracking-[0.4em]">
+          <p className="text-slate-400 font-bold text-[14px] mt-3 uppercase tracking-[0.4em]">
             Distribuidora San José • Control de Asesores
           </p>
         </header>
@@ -114,7 +114,7 @@ export const GestionEmpleados = () => {
             <div className="absolute top-0 left-0 w-2 h-full bg-yellow-400"></div>
 
             <div className="flex-1 min-w-[280px] space-y-2">
-              <label className="text-[10px] font-black text-green-800/40 uppercase ml-2 tracking-widest">
+              <label className="text-[14px] font-black text-green-800/40 uppercase ml-2 tracking-widest">
                 Nombre del Asesor
               </label>
               <div className="relative">
@@ -140,7 +140,7 @@ export const GestionEmpleados = () => {
             </div>
 
             <div className="flex-1 min-w-[250px] space-y-2">
-              <label className="text-[10px] font-black text-green-800/40 uppercase ml-2 tracking-widest">
+              <label className="text-[14px] font-black text-green-800/40 uppercase ml-2 tracking-widest">
                 WhatsApp
               </label>
               <div className="relative">
@@ -166,7 +166,7 @@ export const GestionEmpleados = () => {
             </div>
 
             <div className="flex gap-2">
-              <button className="bg-green-900 text-yellow-400 px-10 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-yellow-400 hover:text-green-900 transition-all shadow-lg active:scale-95 flex items-center gap-2">
+              <button className="bg-green-900 text-yellow-400 px-10 py-4 rounded-2xl font-black uppercase text-s tracking-widest hover:bg-yellow-400 hover:text-green-900 transition-all shadow-lg active:scale-95 flex items-center gap-2">
                 {editando ? <Edit2 size={16} /> : <Plus size={18} />}
                 {editando ? "Guardar" : "Agregar"}
               </button>
@@ -184,7 +184,7 @@ export const GestionEmpleados = () => {
         </section>
 
         {/* BARRA DE BÚSQUEDA Y FILTROS JUNTOS */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-10 items-center justify-between bg-white p-3 rounded-[30px] shadow-xl shadow-green-900/5 border border-slate-50">
+        <div className="flex flex-col lg:flex-row gap-4 mb-10 items-center justify-between bg-white p-3 rounded-[30px] shadow-xl shadow-green-900/5 border border-green-900">
           <div className="relative flex-1 w-full">
             <Search
               className="absolute left-6 top-1/2 -translate-y-1/2 text-green-800/30"
@@ -204,7 +204,7 @@ export const GestionEmpleados = () => {
               <button
                 key={t}
                 onClick={() => setFiltro(t)}
-                className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${
+                className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-[11px] font-black uppercase transition-all ${
                   filtro === t
                     ? "bg-green-900 text-yellow-400 shadow-md scale-105"
                     : "text-slate-400 hover:text-green-900"
@@ -215,13 +215,12 @@ export const GestionEmpleados = () => {
             ))}
           </div>
         </div>
-
         {/* GRILLA DE CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {empleadosFiltrados.map((emp) => (
             <div
               key={emp.id}
-              className="bg-white rounded-[45px] p-8 shadow-2xl shadow-green-900/5 border border-white hover:border-green-900 transition-all duration-500 group relative overflow-hidden"
+              className="bg-white rounded-[45px] p-8 shadow-2xl shadow-green-900/5 border border-green-900 "
             >
               <div className="flex justify-between items-start mb-6">
                 <div
@@ -231,18 +230,18 @@ export const GestionEmpleados = () => {
                 </div>
                 <button
                   onClick={() => togglEstado(emp)}
-                  className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm transition-all ${emp.activo ? "bg-green-100 text-green-800" : "bg-red-50 text-red-400"}`}
+                  className={`px-4 py-2 rounded-full text-[12px] font-black uppercase tracking-widest shadow-sm transition-all ${emp.activo ? "bg-green-100 text-green-800" : "bg-red-50 text-red-400"}`}
                 >
                   ● {emp.activo ? "Activo" : "Inactivo"}
                 </button>
               </div>
 
               <div className="mb-8">
-                <h3 className="text-xl font-bold text-green-900 uppercase italic truncate">
+                <h3 className=" text-[25px] font-bold text-green-900 uppercase italic truncate">
                   {emp.nombre}
                 </h3>
-                <p className="flex items-center gap-2 text-green-700/60 font-bold text-sm mt-1">
-                  <MessageCircle size={14} className="text-yellow-500" />
+                <p className="flex items-center gap-2 text-green-900 font-bold  text-[17px] mt-1">
+                  <MessageCircle size={20} className="text-yellow-500" />
                   {emp.telefono}
                 </p>
               </div>
@@ -259,7 +258,7 @@ export const GestionEmpleados = () => {
                 </button>
                 <button
                   onClick={() => eliminarEmpleado(emp.id, emp.nombre)}
-                  className="flex-1 bg-slate-50 hover:bg-red-500 p-4 rounded-2xl flex items-center justify-center transition-all text-slate-400 hover:text-white"
+                  className=" flex-1 bg-slate-50 hover:bg-red-500 p-4 rounded-2xl flex items-center justify-center transition-all text-slate-400 hover:text-white"
                 >
                   <Trash2 size={18} />
                 </button>

@@ -100,7 +100,7 @@ export const FormProveedor = ({ usuarioId, alEnviar }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Nombre Empresa */}
       <div>
-        <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 italic tracking-widest">
+        <label className="block text-[13px] font-black uppercase text-slate-400 mb-2 italic tracking-widest">
           Razón Social / Nombre Comercial
         </label>
         <input
@@ -117,7 +117,7 @@ export const FormProveedor = ({ usuarioId, alEnviar }) => {
       <div className="grid md:grid-cols-2 gap-6">
         {/* RUC */}
         <div>
-          <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 italic tracking-widest">
+          <label className="block text-[13px] font-black uppercase text-slate-400 mb-2 italic tracking-widest">
             RUC (13 dígitos)
           </label>
           <input
@@ -133,7 +133,7 @@ export const FormProveedor = ({ usuarioId, alEnviar }) => {
 
         {/* Teléfono */}
         <div>
-          <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 italic tracking-widest">
+          <label className="block text-[13px] font-black uppercase text-slate-400 mb-2 italic tracking-widest">
             Teléfono (Fijo o Celular)
           </label>
           <input
@@ -150,7 +150,7 @@ export const FormProveedor = ({ usuarioId, alEnviar }) => {
 
       {/* Upload PDF */}
       <div>
-        <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 italic tracking-widest">
+        <label className="block text-[13px] font-black uppercase text-slate-400 mb-2 italic tracking-widest">
           Catálogo de Productos
         </label>
         <div className="relative border-2 border-dashed border-slate-200 rounded-[30px] p-10 text-center hover:border-green-500 transition-all bg-slate-50/50 group">
@@ -184,7 +184,7 @@ export const FormProveedor = ({ usuarioId, alEnviar }) => {
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
-            <p className="text-[11px] font-black text-slate-400 uppercase tracking-tighter">
+            <p className="text-[13px] font-black text-slate-400 uppercase tracking-tighter">
               {archivo ? (
                 <span className="text-green-600">✅ {archivo.name}</span>
               ) : (
@@ -204,7 +204,7 @@ export const FormProveedor = ({ usuarioId, alEnviar }) => {
       <button
         type="submit"
         disabled={cargando}
-        className={`w-full py-5 rounded-[25px] font-black uppercase tracking-widest text-xs transition-all shadow-xl ${
+        className={`w-full py-5 rounded-[25px] font-black uppercase tracking-widest text-[15px] transition-all shadow-xl ${
           cargando
             ? "bg-slate-200 text-slate-400 cursor-not-allowed"
             : "bg-green-950 text-white hover:bg-yellow-500 hover:text-green-950 active:scale-95"

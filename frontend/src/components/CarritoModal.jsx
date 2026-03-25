@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
-import { X, Trash2, ShoppingBag, Loader2 } from "lucide-react";
+import { X, Trash2, ShoppingBag, Loader2, Flame } from "lucide-react"; // Añadimos Flame
 import { BtnWhatsappSj } from "./BtnWhatsappSj";
 
 export const CarritoModal = ({ isOpen, onClose }) => {
@@ -9,12 +9,11 @@ export const CarritoModal = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  // Manejador del envío
   const handleCheckout = async () => {
     try {
       setIsProcessing(true);
-      await sendToWhatsApp(); // Llama a la lógica global del Context
-      onClose(); // Cierra el modal tras el éxito
+      await sendToWhatsApp();
+      onClose();
     } catch (error) {
       console.error("Error al procesar pedido:", error);
     } finally {
@@ -51,9 +50,9 @@ export const CarritoModal = ({ isOpen, onClose }) => {
           {cart.length === 0 ? (
             <div className="text-center py-20 flex flex-col items-center gap-4">
               <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-300">
-                <ShoppingBag size={40} />
+                <ShoppingBag size={50} />
               </div>
-              <p className="text-slate-400 font-black uppercase text-[10px] tracking-widest">
+              <p className="text-slate-400 font-black uppercase text-[18px] tracking-widest">
                 Tu lista está vacía
               </p>
             </div>
@@ -62,9 +61,14 @@ export const CarritoModal = ({ isOpen, onClose }) => {
               {cart.map((item) => (
                 <div
                   key={item.id}
-                  className="flex gap-4 bg-white p-4 rounded-[25px] border border-slate-200 shadow-sm items-center group"
+                  className={`flex gap-4 bg-white p-4 rounded-[25px] border shadow-sm items-center group relative transition-all ${
+                    item.esTendencia
+                      ? "border-orange-200 bg-orange-50/30"
+                      : "border-slate-200"
+                  }`}
                 >
-                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
+                  {/* Contenedor de Imagen con Fueguito */}
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
                     <img
                       src={
                         item.imagen ||
@@ -73,22 +77,49 @@ export const CarritoModal = ({ isOpen, onClose }) => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       alt={item.nombre}
                     />
+                    {/* FUEGUITO SOBRE LA IMAGEN */}
+                    {item.esTendencia && (
+                      <div className="absolute top-1 left-1 bg-orange-500 p-1 rounded-full shadow-md z-10 animate-pulse">
+                        <Flame size={13} fill="white" className="text-white" />
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex-1">
-                    <h4 className="font-black text-green-950 text-sm uppercase leading-tight line-clamp-1">
-                      {item.nombre}
-                    </h4>
-                    <p className="text-[10px] text-yellow-600 font-black uppercase tracking-tighter">
+                    <div className="flex items-center gap-1.5">
+                      <h4 className="font-black text-green-950 text-sm uppercase leading-tight line-clamp-1">
+                        {item.nombre}
+                      </h4>
+                      {/* FUEGUITO JUNTO AL NOMBRE */}
+                      {item.esTendencia && (
+                        <Flame
+                          size={16}
+                          className="text-orange-500 flex-shrink-0"
+                          fill="currentColor"
+                        />
+                      )}
+                    </div>
+
+                    <p className="text-[15px] text-yellow-600 font-black uppercase tracking-tighter">
                       {item.categoria || "General"}
                     </p>
-                    <div className="mt-2 flex items-center gap-2">
-                      <span className="text-[9px] font-black text-slate-400 uppercase">
-                        Cantidad:
-                      </span>
-                      <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-lg text-xs font-black">
-                        {item.quantity}
-                      </span>
+
+                    <div className="mt-2 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[12px] font-black text-slate-400 uppercase">
+                          Cantidad:
+                        </span>
+                        <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-lg text-xs font-black">
+                          {item.quantity}
+                        </span>
+                      </div>
+
+                      {/* ETIQUETA DE TENDENCIA */}
+                      {item.esTendencia && (
+                        <span className="text-[12px] font-black text-orange-600 bg-orange-100 px-2 py-0.5 rounded-md uppercase tracking-tighter">
+                          Producto TOP
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -96,7 +127,7 @@ export const CarritoModal = ({ isOpen, onClose }) => {
                     onClick={() => removeFromCart(item.id)}
                     className="text-red-300 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-all"
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={23} />
                   </button>
                 </div>
               ))}
@@ -108,7 +139,7 @@ export const CarritoModal = ({ isOpen, onClose }) => {
         {cart.length > 0 && (
           <div className="p-6 bg-white border-t border-slate-100">
             <div className="mb-6 flex items-center justify-between px-2">
-              <span className="font-black text-slate-400 uppercase text-[10px]">
+              <span className="font-black text-slate-400 uppercase text-[16px]">
                 Total de productos:
               </span>
               <span className="font-black text-green-900 text-xl">
@@ -116,7 +147,6 @@ export const CarritoModal = ({ isOpen, onClose }) => {
               </span>
             </div>
 
-            {/* BOTÓN CON LÓGICA DE CARGA */}
             <button
               onClick={handleCheckout}
               disabled={isProcessing}
@@ -136,7 +166,7 @@ export const CarritoModal = ({ isOpen, onClose }) => {
               )}
             </button>
 
-            <p className="text-[9px] text-center text-slate-400 mt-4 uppercase font-bold leading-tight px-4">
+            <p className="text-[11px] text-center text-slate-400 mt-4 uppercase font-bold leading-tight px-4">
               Tu lista será procesada por nuestro sistema para asignarte un
               asesor de forma inmediata según disponibilidad global.
             </p>

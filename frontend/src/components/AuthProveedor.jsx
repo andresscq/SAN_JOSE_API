@@ -112,7 +112,7 @@ export const AuthProveedor = ({ alEntrar }) => {
         <form onSubmit={handleSubmit} className="space-y-5">
           {esRegistro && (
             <div>
-              <label className="text-[10px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic">
+              <label className="text-[12px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic">
                 Nombre de la Empresa
               </label>
               <input
@@ -128,7 +128,7 @@ export const AuthProveedor = ({ alEntrar }) => {
           )}
 
           <div>
-            <label className="text-[10px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic">
+            <label className="text-[12px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic">
               Correo Corporativo
             </label>
             <input
@@ -144,7 +144,7 @@ export const AuthProveedor = ({ alEntrar }) => {
 
           <div className="space-y-5">
             <div className="relative">
-              <label className="text-[10px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic">
+              <label className="text-[12px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic">
                 Contraseña
               </label>
               <div className="relative">
@@ -170,11 +170,11 @@ export const AuthProveedor = ({ alEntrar }) => {
               {esRegistro && (
                 <div className="mt-4 px-2">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-[9px] font-black text-slate-400 uppercase italic">
+                    <span className="text-[12px] font-black text-slate-400 uppercase italic">
                       Seguridad
                     </span>
                     <span
-                      className={`text-[9px] font-black uppercase italic ${datos.password.length >= 9 ? "text-green-600" : "text-red-500"}`}
+                      className={`text-[12px] font-black uppercase italic ${datos.password.length >= 9 ? "text-green-600" : "text-red-500"}`}
                     >
                       {datos.password.length}/9 Caracteres
                     </span>
@@ -191,7 +191,7 @@ export const AuthProveedor = ({ alEntrar }) => {
 
             {esRegistro && (
               <div className="relative">
-                <label className="text-[10px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic text-right mr-4">
+                <label className="text-[12px] font-black text-green-900 uppercase tracking-widest ml-4 mb-2 block italic text-right mr-4">
                   Verificar Contraseña
                 </label>
                 <div className="relative">
@@ -236,7 +236,7 @@ export const AuthProveedor = ({ alEntrar }) => {
               setEsRegistro(!esRegistro);
               setError("");
             }}
-            className="text-[11px] font-black uppercase text-green-900 hover:text-yellow-600 transition-all italic"
+            className="text-[12px] font-black uppercase text-green-900 hover:text-yellow-600 transition-all italic"
           >
             {esRegistro
               ? "¿Ya eres proveedor? Inicia Sesión"

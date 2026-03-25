@@ -22,7 +22,7 @@ export const Footer = () => {
             <div className="flex items-center gap-3">
               <div className="h-[1px] w-12 bg-yellow-400"></div>
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-400">
-                Texto de referencia no se que poner
+                Tu Confianza, Nuestra Promesa
               </span>
             </div>
           </div>
@@ -63,12 +63,14 @@ export const Footer = () => {
                 <h4 className="text-2xl font-black mb-2 uppercase italic tracking-tighter text-white">
                   ¿Necesitas <span className="text-yellow-400">Ayuda?</span>
                 </h4>
-                <p className="text-slate-400 text-xs font-bold mb-8 leading-relaxed">
+                <p className="text-slate-400 text-s font-bold mb-8 leading-relaxed">
                   Escríbenos directamente para pedidos mayoristas, soporte
                   técnico o dudas sobre el catálogo.
                 </p>
                 <a
-                  href="https://wa.me/tu-numero"
+                  href={`https://wa.me/593987786722?text=${encodeURIComponent(
+                    "¡Hola! Vengo de la página web de Distribuidora San José. Me gustaría recibir más información sobre sus productos.",
+                  )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full bg-green-600 text-white font-black text-center py-4 rounded-xl uppercase text-xs tracking-widest hover:bg-yellow-500 hover:text-green-950 transition-all shadow-lg active:scale-95"
@@ -84,21 +86,11 @@ export const Footer = () => {
         <div className="h-px w-full bg-white/5 mb-10"></div>
 
         {/* Copyright y Créditos Finales */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-center md:text-left">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-6">
+          <div className="text-center">
             <p className="text-[10px] font-black text-slate-500 tracking-[0.3em] uppercase">
               © 2026 DISTRIBUIDORA SAN JOSÉ - TODOS LOS DERECHOS RESERVADOS
             </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest italic">
-              Desarrollado por:
-            </span>
-            <span className="text-xs font-black text-yellow-400/60 uppercase">
-              Steven Jácome <span className="text-slate-700">&</span> Andrés
-              Criollo
-            </span>
           </div>
         </div>
       </div>

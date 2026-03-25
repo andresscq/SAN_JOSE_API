@@ -30,10 +30,10 @@ export const Sedes = () => {
     >
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-16">
-          <h2 className="text-4xl font-black text-green-900 uppercase italic tracking-tighter leading-none">
+          <h2 className="text-5xl font-black text-green-900 uppercase italic tracking-tighter leading-none">
             Nuestras <span className="text-yellow-500">Sedes</span>
           </h2>
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-3">
+          <p className="text-slate-400 text-[15px] font-bold uppercase tracking-[0.3em] mt-3">
             Distribuidora San José • Puntos de Atención y Venta
           </p>
         </header>
@@ -102,25 +102,25 @@ export const Sedes = () => {
                   </div>
                 </div>
 
-                <h3 className="font-black text-green-900 text-lg uppercase leading-tight mb-1">
+                <h3 className="font-black text-green-900 text-lg uppercase leading-tight mb-1 text-[19px]">
                   {sede.nombre_sede}
                 </h3>
 
                 <div className="space-y-1">
-                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider text-[14px]">
                     {sede.ubicacion}
                   </p>
 
                   {/* Opcional: Muestra el nombre del asesor si existe */}
                   {sede.nombre_empleado && (
-                    <p className="text-yellow-600 text-[9px] font-bold uppercase italic">
+                    <p className="text-yellow-600 text-[16px] font-bold uppercase italic">
                       Asesor: {sede.nombre_empleado}
                     </p>
                   )}
 
                   <div className="flex items-center justify-center gap-2 mt-2">
                     <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></span>
-                    <p className="text-green-700 text-[9px] font-black uppercase italic">
+                    <p className="text-green-700 text-[12px] font-black uppercase italic text-[18px]">
                       {sede.horario}
                     </p>
                   </div>
@@ -134,7 +134,7 @@ export const Sedes = () => {
         <div className="mt-20 text-center">
           <Link
             to="/todas-las-sedes"
-            className="inline-block bg-green-900 text-white px-10 py-5 rounded-[22px] font-black text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-green-100 hover:bg-yellow-500 hover:text-green-900 hover:-translate-y-1 transition-all duration-300"
+            className="inline-block bg-green-900 text-white px-10 py-5 rounded-[22px] font-black text-[13px] uppercase tracking-[0.2em] shadow-xl shadow-green-100 hover:bg-yellow-500 hover:text-green-900 hover:-translate-y-1 transition-all duration-300"
           >
             Conoce todas nuestras sedes
           </Link>

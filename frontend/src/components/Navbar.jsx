@@ -35,14 +35,14 @@ export const Navbar = () => {
             <div className="bg-yellow-400 p-2 rounded-full font-black text-green-700 shadow-sm">
               SJ
             </div>
-            <span className="text-xl font-black text-green-700 tracking-tighter">
+            <span className="text-2xl font-black text-green-700 tracking-tighter ">
               DISTRIBUIDORA SAN JOSÉ
             </span>
           </Link>
 
           {/* MENÚ DE NAVEGACIÓN (TODAS TUS RUTAS ORIGINALES) */}
           <div className="flex items-center gap-6">
-            <ul className="hidden md:flex items-center gap-6 text-xs font-black text-green-800 uppercase">
+            <ul className="hidden md:flex items-center gap-6 text-[12px] font-black text-green-800 uppercase">
               <li>
                 <Link
                   to="/"
@@ -103,7 +103,7 @@ export const Navbar = () => {
             {/* --- NUEVO BOTÓN DE CARRITO (INTEGRADO AL FINAL DEL MENÚ) --- */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-green-900 hover:bg-yellow-400 transition-all group shadow-sm active:scale-90"
+              className="relative p-2.5 bg-slate-50 border border-green-900 rounded-xl text-green-900 hover:bg-yellow-400 transition-all group shadow-sm active:scale-90"
             >
               <ShoppingCart size={20} strokeWidth={2.5} />
               {totalItems > 0 && (
