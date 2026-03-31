@@ -59,7 +59,28 @@ export const Catalogo = () => {
         categoriaSel === "Todas" || p.nombre_categoria === categoriaSel;
       return matchNombre && matchCat;
     })
-    .sort((a, b) => esProductoTop(b.nombre) - esProductoTop(a.nombre));
+    .sort((a, b) => {
+      const stockA = parseInt(a.stock) || 0;
+      const stockB = parseInt(b.stock) || 0;
+      const esTopA = esProductoTop(a.nombre);
+      const esTopB = esProductoTop(b.nombre);
+
+      // --- REGLA 1: Los agotados SIEMPRE al final ---
+      if (stockA > 0 && stockB <= 0) return -1;
+      if (stockA <= 0 && stockB > 0) return 1;
+
+      // --- REGLA 2: Si AMBOS tienen stock, prioridad a la Tendencia ---
+      if (stockA > 0 && stockB > 0) {
+        if (esTopA && !esTopB) return -1;
+        if (!esTopA && esTopB) return 1;
+
+        // --- REGLA 3: Si ambos son tendencia (o ninguno lo es), mayor stock primero ---
+        return stockB - stockA;
+      }
+
+      // --- REGLA 4: Si ambos están agotados, tendencia arriba (para que se vea lo que hubo) ---
+      return esTopB - esTopA;
+    });
 
   const listaCarrusel = productos
     .filter((p) => esProductoTop(p.nombre))

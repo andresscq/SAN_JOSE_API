@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const productoController = require("../controllers/producto.controller");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -19,6 +20,8 @@ const storageProd = multer.diskStorage({
 });
 
 const uploadProd = multer({ storage: storageProd });
+
+router.post("/sincronizar", productoController.sincronizarTodo);
 
 // --- 2. RUTAS DE CATEGORÍAS ---
 

@@ -15,7 +15,7 @@ export const ProductoCard = ({
   nombre,
   categoria,
   imagen,
-  descripcion,
+  descripcion, // Se mantiene en los props por si la lógica lo usa, pero no se renderiza
   stock,
   stock_alerta,
   esTendencia,
@@ -57,18 +57,15 @@ export const ProductoCard = ({
     };
 
     try {
-      // 1. Preguntamos al backend quién está de turno
       const res = await api.get("/api/empleados/siguiente-turno");
 
       if (res.data.fueraDeHorario) {
-        // 2. Si está fuera de horario, mostramos el Modal
         setDatosCierre({
           mensaje: res.data.mensaje,
           telefono: res.data.telefono,
         });
         setMostrarModal(true);
       } else {
-        // 3. Si hay atención, procedemos normal
         addToCart(productoActual);
         await sendToWhatsApp(productoActual);
       }
@@ -83,12 +80,11 @@ export const ProductoCard = ({
       className={`bg-white p-5 rounded-[35px] shadow-md border flex flex-col hover:shadow-2xl transition-all duration-500 h-full group relative ${esTendencia ? "border-orange-400/40 shadow-orange-50" : "border-gray-100"}`}
     >
       {/* -------------------------------------------------------------------------------- */}
-      {/* NUEVO MODAL DE HORARIO (Diseño Web Coherente con Verdes y Blancos) */}
+      {/* NUEVO MODAL DE HORARIO */}
       {/* -------------------------------------------------------------------------------- */}
       {mostrarModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-green-950/20 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl relative text-center border border-gray-100 overflow-hidden">
-            {/* Decoración de fondo suave */}
             <div className="absolute -top-16 -right-16 w-32 h-32 bg-green-50 rounded-full"></div>
 
             <button
@@ -137,9 +133,8 @@ export const ProductoCard = ({
           </div>
         </div>
       )}
-      {/* -------------------------------------------------------------------------------- */}
 
-      {/* RESTO DE TU CARD (Sin cambios, tal como la enviaste) */}
+      {/* CONTENIDO DE LA CARD */}
       {esTendencia && (
         <div className="absolute -top-3 left-6 z-20 flex items-center gap-1.5 bg-orange-500 text-white px-3 py-1 rounded-full shadow-lg shadow-orange-200">
           <Flame size={15} fill="white" className="animate-pulse" />
@@ -171,14 +166,9 @@ export const ProductoCard = ({
         <span className="text-[17px] font-black text-green-800 uppercase tracking-[0.2em] mb-1">
           {categoria || "General"}
         </span>
-        <h3 className="text-[18px] font-black uppercase leading-tight mb-2 text-green-950">
+        <h3 className="text-[18px] font-black uppercase leading-tight mb-6 text-green-950">
           {nombre}
         </h3>
-        <p className="text-[16px] text-gray-500 font-medium italic line-clamp-2 mb-5 leading-relaxed flex-grow">
-          {descripcion?.trim()
-            ? descripcion
-            : "Selección premium para tu negocio."}
-        </p>
 
         <div className="flex flex-col gap-2 mt-auto">
           <button
