@@ -4,10 +4,13 @@ const {
   fetchProductosContifico,
 } = require("../services/contifico.service");
 
-// --- 1. LÓGICA PURA (Independiente de Express) ---
-// Esta es la función que el Cron Job y el Controlador llamarán
+// --- 1. LÓGICA DE SINCRONIZACIÓN ---
 const ejecutarSincronizacionFisica = async () => {
-  console.log("🔄 Iniciando sincronización de Distribuidora San José...");
+  // Capturamos la hora exacta del inicio
+  const horaInicio = new Date().toLocaleString("es-EC", {
+    timeZone: "America/Guayaquil",
+  });
+  console.log(`\n[${horaInicio}] 🔄 Iniciando sincronización automática...`);
 
   const [categoriasAPI, productosAPI] = await Promise.all([
     fetchCategoriasContifico(),
@@ -32,60 +35,74 @@ const ejecutarSincronizacionFisica = async () => {
     }
   }
 
-  // 2. Sincronizar Productos
+  // 2. Sincronizar Productos (Filtro Activos 'A')
   let contador = 0;
   for (const prod of productosAPI) {
-    const categoriaInternaId = mapaCategorias[prod.categoria_id] || null;
-    const stockBruto = prod.cantidad_stock ?? prod.stock ?? prod.cantidad ?? 0;
-    const stockEntero = Math.round(parseFloat(stockBruto));
+    // Si el estado es 'I', lo borramos de nuestra DB
+    if (prod.estado === "I") {
+      await pool.query(
+        `DELETE FROM productos WHERE contifico_external_id = $1 OR nombre = $2`,
+        [prod.id, prod.nombre],
+      );
+      continue;
+    }
 
-    await pool.query(
-      `INSERT INTO productos (nombre, stock, categoria_id, descripcion, contifico_external_id)
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (nombre) 
-       DO UPDATE SET 
-          stock = EXCLUDED.stock,
-          categoria_id = EXCLUDED.categoria_id,
-          descripcion = EXCLUDED.descripcion,
-          contifico_external_id = EXCLUDED.contifico_external_id`,
-      [
-        prod.nombre,
-        stockEntero,
-        categoriaInternaId,
-        prod.descripcion || "",
-        prod.id,
-      ],
-    );
-    contador++;
+    // Solo procesamos si el estado es exactamente 'A'
+    if (prod.estado === "A") {
+      const categoriaInternaId = mapaCategorias[prod.categoria_id] || null;
+      const stockBruto =
+        prod.cantidad_stock ?? prod.stock ?? prod.cantidad ?? 0;
+      const stockEntero = Math.round(parseFloat(stockBruto));
+
+      await pool.query(
+        `INSERT INTO productos (nombre, stock, categoria_id, descripcion, contifico_external_id, estado)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (nombre) 
+         DO UPDATE SET 
+            stock = EXCLUDED.stock,
+            categoria_id = EXCLUDED.categoria_id,
+            descripcion = EXCLUDED.descripcion,
+            contifico_external_id = EXCLUDED.contifico_external_id,
+            estado = EXCLUDED.estado`,
+        [
+          prod.nombre,
+          stockEntero,
+          categoriaInternaId,
+          prod.descripcion || "",
+          prod.id,
+          "activo",
+        ],
+      );
+      contador++;
+    }
   }
 
-  return contador; // Devolvemos el total para usarlo en los logs o respuestas
+  // LOG FINAL EN CONSOLA
+  const horaFin = new Date().toLocaleString("es-EC", {
+    timeZone: "America/Guayaquil",
+  });
+  console.log(
+    `[${horaFin}] ✅ ÉXITO: Se sincronizaron ${contador} productos activos.\n`,
+  );
+
+  return contador;
 };
 
-// --- 2. CONTROLADOR PARA LA RUTA API ---
+// --- 2. CONTROLADOR ---
 const sincronizarTodo = async (req, res) => {
   try {
     const contador = await ejecutarSincronizacionFisica();
-
-    console.log(`✅ Sincronización exitosa: ${contador} productos procesados.`);
-
     res.json({
       success: true,
-      message: `Sincronización lista: ${contador} productos actualizados (Stock en números enteros).`,
+      message: `Sincronización lista: ${contador} productos en catálogo.`,
     });
   } catch (error) {
-    console.error("❌ Error en el controlador:", error.message);
-    res.status(500).json({
-      error: "Error al sincronizar con la base de datos",
-      detalle: error.message,
+    const horaError = new Date().toLocaleString("es-EC", {
+      timeZone: "America/Guayaquil",
     });
+    console.error(`[${horaError}] ❌ Error en sincronización:`, error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
-// --- 3. EXPORTACIÓN DE AMBAS ---
-module.exports = {
-  sincronizarTodo,
-  ejecutarSincronizacionFisica,
-};
-
-
+module.exports = { sincronizarTodo, ejecutarSincronizacionFisica };
